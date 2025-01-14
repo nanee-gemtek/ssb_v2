@@ -25,7 +25,7 @@ public class AnswerService {
         return AnswerDTO.builder()
                 .id(answer.getId())
                 .content(answer.getContent())
-                .question(questionService.convertToDTO(answer.getQuestion()))
+                .question(answer.getQuestion())
                 .createDate(answer.getCreateDate())
                 .build();
     }

@@ -26,6 +26,8 @@ public class Answer {
     private Question question;
 
 
+
+    @Builder
     public Answer(String content,Question question){
         this.content = content;
         this.question = question;

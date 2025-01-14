@@ -13,6 +13,14 @@ import java.time.LocalDateTime;
 public class AnswerDTO {
     private final Integer id;
     private final String content;
-    private final QuestionDTO question;
+    private final Question question;
     private final LocalDateTime createDate;
+
+    // DTO → Entity 변환
+    public Answer toEntity(){
+        return Answer.builder()
+                .content(content)
+                .question(question)
+                .build();
+    }
 }
