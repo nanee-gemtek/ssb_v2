@@ -12,7 +12,6 @@ import java.util.List;
 
 //@Data
 @Getter
-//@Builder
 @Entity
 public class Question {
     @Id
@@ -30,14 +29,17 @@ public class Question {
     //CascadeType.REMOVE 질문삭제시 그에 달린 답변도 삭제
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private List<Answer> answerList;
-    
+
     //엔티티 카멜표기 -> 언더바로 변경
 
     //Builder 패턴으로  초기화(객체생성) 시 아래 코드 불필요
 
-    public Question(String subject, String content){
+
+    @Builder
+    public Question(String subject, String content,List<Answer> answerList){
         this.subject = subject;
         this.content = content;
+        this.answerList = answerList;
         this.createDate = LocalDateTime.now();
     }
 

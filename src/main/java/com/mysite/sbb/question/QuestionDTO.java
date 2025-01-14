@@ -15,4 +15,11 @@ public class QuestionDTO {
     private final String content;
     private final LocalDateTime createDate;
     private final List<AnswerDTO> answerList;
+
+    public Question toEntity(){
+        return Question.builder()
+                .subject(subject)
+                .content(content)
+                .build();
+    }
 }

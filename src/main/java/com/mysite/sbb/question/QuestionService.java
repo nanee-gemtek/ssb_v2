@@ -61,7 +61,6 @@ public class QuestionService {
     }
 
     public void create(QuestionDTO questionDTO) {
-        Question question = new Question(questionDTO.getSubject(), questionDTO.getContent());
-        questionRepository.save(question);
+        questionRepository.save(questionDTO.toEntity());
     }
 }
