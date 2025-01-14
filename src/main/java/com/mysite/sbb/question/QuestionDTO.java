@@ -16,6 +16,7 @@ public class QuestionDTO {
     private final LocalDateTime createDate;
     private final List<AnswerDTO> answerList;
 
+    // DTO → Entity 변환
     public Question toEntity(){
         return Question.builder()
                 .subject(subject)

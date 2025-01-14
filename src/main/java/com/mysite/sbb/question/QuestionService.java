@@ -40,7 +40,7 @@ public class QuestionService {
                 .orElseThrow(() -> new DataNotFoundException("Question not found"));
     }
 
-    //Question 엔티티를  QuestionDTO로 변환하는 도우미 메서드
+    //Entity → DTO 변환
     public QuestionDTO convertToDTO(Question question){
 
         //답변리스트 변환
