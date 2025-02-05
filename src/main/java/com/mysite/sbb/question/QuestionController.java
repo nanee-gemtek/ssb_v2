@@ -37,12 +37,15 @@ public class QuestionController {
         return "question_detail";
     }
     @GetMapping("/create")
-    public String questionCreate(){
+    public String questionCreate(Model model){
+
+        QuestionDTO questionDTO = QuestionDTO.builder().build();
+        model.addAttribute("questionDTO",questionDTO);
         return "question_form";
     }
 
     @PostMapping("/create")
-    public String questionCreate(Model model,@ModelAttribute QuestionDTO questionDTO){
+    public String questionCreate(@ModelAttribute QuestionDTO questionDTO){
         //TODO 질문을 저장한다
         questionService.create(questionDTO);
         return "redirect:/question/list";
