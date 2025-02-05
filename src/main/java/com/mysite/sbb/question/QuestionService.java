@@ -11,28 +11,24 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-// final 필드만 포함하는 생성자를 자동으로 생성
-// 의존성 주입을 위한 생성자를 간편한게 작성할 수 있다.
 @Service
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    private final QuestionMapper questionMapper;
 
     // 질문 목록 조회 메서드
     public List<QuestionDTO> getList() {
         return this.questionRepository.findAll().stream() //.stream()조회된 질문 목록을 스트림으로 변환(컬렉션 반복 처리에 유용)
-                .map(this::convertToDTO) //스트임의 각 Question 엔티티를  QuestionDTO로 변환
+                .map(questionMapper::toDTO) //스트임의 각 Question 엔티티를  QuestionDTO로 변환
                 .collect(Collectors.toList()); //변환된 QuestionDTO를 리스트로 수집, 최종적으로 DTO 리스트 반환
     }
 
     //질문 조회
     public QuestionDTO getQuestion(Integer id){
-        Optional<Question> question = this.questionRepository.findById(id);
+        Question question = questionRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Question not found"));
+        return questionMapper.toDTO(question);
 
-        if(question.isPresent()){
-            return convertToDTO(question.get());
-        }else{
-            throw new DataNotFoundException("question not found");
-        }
     }
 
     public Question findById(Integer id) {
@@ -40,7 +36,9 @@ public class QuestionService {
                 .orElseThrow(() -> new DataNotFoundException("Question not found"));
     }
 
+    //MapStruct 으로 자동변환되어 삭제
     //Entity → DTO 변환
+    /*
     public QuestionDTO convertToDTO(Question question){
 
         //답변리스트 변환
@@ -59,8 +57,9 @@ public class QuestionService {
                 .answerList(answerDTOList)
                 .build();
     }
+     */
 
     public void create(QuestionDTO questionDTO) {
-        questionRepository.save(questionDTO.toEntity());
+        questionRepository.save(questionMapper.toEntity(questionDTO));
     }
 }

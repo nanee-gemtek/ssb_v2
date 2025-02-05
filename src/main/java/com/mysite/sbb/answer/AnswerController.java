@@ -1,5 +1,6 @@
 package com.mysite.sbb.answer;
 
+import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionDTO;
 import com.mysite.sbb.question.QuestionService;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,16 @@ public class AnswerController {
     private final QuestionService questionService;
     private final AnswerService answerService;
 
-    @PostMapping("/create/{id}")
-    public String createAnswer(Model model, @PathVariable("id") Integer id, @ModelAttribute AnswerDTO answerDTO){
-        QuestionDTO question = this.questionService.getQuestion(id);
-        answerService.create(answerDTO,id);
-        return String.format("redirect:/question/detail/%s",id);
+    @PostMapping("/create")
+    public String createAnswer(@ModelAttribute AnswerDTO answerDTO){
+        answerService.create(answerDTO);
+        return String.format("redirect:/question/detail/%s",answerDTO.getQuestionId());
+    }
+
+    @GetMapping("/delete/{id}")
+    public String answerDelete( @PathVariable("id") Integer id) {
+        AnswerDTO answerDto = answerService.getAnswer(id);
+        answerService.delete(answerDto);
+        return String.format("redirect:/question/detail/%s", answerDto.getQuestionId());
     }
 }

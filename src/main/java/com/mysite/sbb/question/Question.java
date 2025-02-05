@@ -1,10 +1,7 @@
 package com.mysite.sbb.question;
 
 import com.mysite.sbb.answer.Answer;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -12,6 +9,9 @@ import java.util.List;
 
 //@Data
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Question {
     @Id
@@ -34,7 +34,7 @@ public class Question {
 
     //Builder 패턴으로  초기화(객체생성) 시 아래 코드 불필요
 
-
+    /*
     @Builder
     public Question(String subject, String content,List<Answer> answerList){
         this.subject = subject;
@@ -50,6 +50,6 @@ public class Question {
 
     // JPA를 위한 기본 생성자 (필수)
     protected Question() {}
-
+    */
 
 }

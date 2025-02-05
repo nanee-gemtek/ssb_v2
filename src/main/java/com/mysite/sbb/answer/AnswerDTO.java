@@ -2,25 +2,22 @@ package com.mysite.sbb.answer;
 
 import com.mysite.sbb.question.Question;
 import com.mysite.sbb.question.QuestionDTO;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
+@Setter
+//DTO에 setter 추가한 이유
+//https://www.inflearn.com/community/questions/161417/dto-%EC%82%AC%EC%9A%A9%EC%97%90%EB%8C%80%ED%95%B4-%EA%B6%81%EA%B8%88%ED%95%A9%EB%8B%88%EB%8B%A4?srsltid=AfmBOop0X9hziYTTYZ_jSaes1SxMpDAtyn-VLkZcTZrsdj6G45jyuRG1
 @Builder
-public class AnswerDTO {
-    private final Integer id;
-    private final String content;
-    private final Question question;
-    private final LocalDateTime createDate;
+@NoArgsConstructor
+@AllArgsConstructor
 
-    // DTO → Entity 변환
-    public Answer toEntity(){
-        return Answer.builder()
-                .content(content)
-                .question(question)
-                .build();
-    }
+public class AnswerDTO {
+    private  Integer id;
+    private  String content;
+    private  LocalDateTime createDate;
+    private  Integer questionId; //Question과의 연관 관계는 questionId로 표현(연관관계 단순화)
+
 }
