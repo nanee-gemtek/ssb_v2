@@ -3,9 +3,14 @@ package com.mysite.sbb.question;
 import com.mysite.sbb.DataNotFoundException;
 import com.mysite.sbb.answer.AnswerDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -61,5 +66,15 @@ public class QuestionService {
 
     public void create(QuestionDTO questionDTO) {
         questionRepository.save(questionMapper.toEntity(questionDTO));
+    }
+
+    public Page<QuestionDTO> getList(int page){ //정수 타입의 페이지 번호를 입력받아 해당 페이지의 Page객체를 리턴
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("createDate"));
+
+        Pageable pageable = PageRequest.of(page,10, Sort.by(sorts));
+
+        Page<Question> questionPage = this.questionRepository.findAll(pageable);
+        return questionMapper.toDTO(questionPage);
     }
 }

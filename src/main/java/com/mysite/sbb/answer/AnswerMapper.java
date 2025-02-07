@@ -14,8 +14,6 @@ public interface AnswerMapper {
     @Mapping(source="question.id", target = "questionId")
     AnswerDTO toDTO(Answer answer);
 
-    // AnswerDTO -> Answer 변환 (Question연결은 Service에서 처리)
-    //@Mapping(target = "question", ignore = true) //Question은 수동으로 연결
     @Mapping(source = "questionId", target = "question", qualifiedByName = "idToQuestion")
     Answer toEntity(AnswerDTO answerDTO);
 

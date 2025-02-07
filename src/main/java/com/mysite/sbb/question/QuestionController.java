@@ -2,6 +2,7 @@ package com.mysite.sbb.question;
 
 import com.mysite.sbb.answer.AnswerDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +16,9 @@ public class QuestionController {
 
     private final QuestionService questionService;
     @GetMapping("/list")
-    public String list(Model model){ //매개변수로 Model을 지정하면 객체가 자동으로 생성된다.
-        List<QuestionDTO> questionList = questionService.getList();
-        model.addAttribute("questionList",questionList);
+    public String list(Model model,@RequestParam(value="page", defaultValue = "1") int page){ //매개변수로 Model을 지정하면 객체가 자동으로 생성된다.
+        Page<QuestionDTO> paging = questionService.getList(page-1);
+        model.addAttribute("paging",paging);
         return "question_list";
     }
 
