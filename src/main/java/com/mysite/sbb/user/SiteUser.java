@@ -1,11 +1,11 @@
 package com.mysite.sbb.user;
 
-import com.mysite.sbb.answer.Answer;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.List;
 
 //@Data
 @Getter
@@ -21,7 +21,9 @@ public class SiteUser {
     @Column(unique = true)
     private String username;
 
-    private String password;
+    private String password; //SHA1
+
+    private String apiPassword; //BCrypt
 
     @Column(unique = true)
     private String email;

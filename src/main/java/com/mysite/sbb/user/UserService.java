@@ -1,4 +1,5 @@
 package com.mysite.sbb.user;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -10,11 +11,14 @@ public class UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    PasswordEncoder bCpasswordEncoder = new BCryptPasswordEncoder();
+
     public UserDTO create(UserDTO userDTO){
         SiteUser siteUser = SiteUser.builder()
                 .username(userDTO.getUsername())
                 .email(userDTO.getEmail())
                 .password(passwordEncoder.encode(userDTO.getPassword()))
+                .apiPassword(bCpasswordEncoder.encode(userDTO.getPassword()))
                 .build();
         userRepository.save(siteUser);
         return userDTO;
