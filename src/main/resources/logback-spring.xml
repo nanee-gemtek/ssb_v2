@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <springProperty name="logPath" source="logging.path"/>
+
+    <!-- Console Appender -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- trxId(트랜잭션 ID): 요청(Request) 별로 고유 값(UUID)을 부여하고, 로그에 함께 출력 -->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %magenta([%thread])[%X{trxId}] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- File Appender -->
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${logPath}/debug.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${logPath}/debug.%d{yyMMdd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %magenta([%thread])[%X{trxId}] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 로그 레벨 설정 -->
+
+
+    <!-- Root Logger -->
+    <springProfile name="prod">
+        <logger name="com.mysite.sbb" level="DEBUG" />
+        <root level="INFO">
+            <appender-ref ref="file"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="local">
+        <root level="INFO">
+            <appender-ref ref="console"/>
+        </root>
+    </springProfile>
+
+</configuration>

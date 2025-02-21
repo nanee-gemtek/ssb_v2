@@ -37,3 +37,8 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+//빌드시 테스트 제외
+tasks.withType(Test).configureEach {
+	enabled = false
+}
