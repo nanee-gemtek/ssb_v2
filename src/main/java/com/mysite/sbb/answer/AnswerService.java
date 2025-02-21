@@ -1,7 +1,12 @@
 package com.mysite.sbb.answer;
 
 import com.mysite.sbb.DataNotFoundException;
-import com.mysite.sbb.question.*;
+import com.mysite.sbb.question.Question;
+import com.mysite.sbb.question.QuestionMapper;
+import com.mysite.sbb.question.QuestionRepository;
+import com.mysite.sbb.question.QuestionService;
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +20,7 @@ public class AnswerService {
     private final AnswerMapper answerMapper;
     private final QuestionMapper questionMapper;
     private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
 
     public void create(AnswerDTO answerDTO) {
         //1. DTO → Entity 변환
@@ -32,11 +38,16 @@ public class AnswerService {
         );
          */
 
+        //실제 SiteUser 엔티티 조회
+        SiteUser author = userRepository.findByusername(answerDTO.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         // 2. Answer 객체 생성(빌더패턴만 사용)
         Answer answer = Answer.builder()
                 .content(answerDTO.getContent())
                 .createDate(LocalDateTime.now())
                 .question(question)
+                .author(author)
                 .build();
 
         //3. 답변저장

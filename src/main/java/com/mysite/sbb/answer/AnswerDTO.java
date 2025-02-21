@@ -1,7 +1,5 @@
 package com.mysite.sbb.answer;
 
-import com.mysite.sbb.question.Question;
-import com.mysite.sbb.question.QuestionDTO;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,5 +17,6 @@ public class AnswerDTO {
     private  String content;
     private  LocalDateTime createDate;
     private  Integer questionId; //Question과의 연관 관계는 questionId로 표현(연관관계 단순화)
+    private  String username;
 
 }

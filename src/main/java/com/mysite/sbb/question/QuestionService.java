@@ -1,7 +1,8 @@
 package com.mysite.sbb.question;
 
 import com.mysite.sbb.DataNotFoundException;
-import com.mysite.sbb.answer.AnswerDTO;
+import com.mysite.sbb.user.SiteUser;
+import com.mysite.sbb.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final QuestionMapper questionMapper;
+    private final UserRepository userRepository;
 
     // 질문 목록 조회 메서드
     public List<QuestionDTO> getList() {
@@ -65,7 +66,18 @@ public class QuestionService {
      */
 
     public void create(QuestionDTO questionDTO) {
-        questionRepository.save(questionMapper.toEntity(questionDTO));
+        //실제 SiteUser 엔티티 조회
+        SiteUser author = userRepository.findByusername(questionDTO.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        Question question = Question.builder()
+                .content(questionDTO.getContent())
+                .createDate(LocalDateTime.now())
+                .subject(questionDTO.getSubject())
+                .author(author)
+                .build();
+
+        questionRepository.save(question);
     }
 
     public Page<QuestionDTO> getList(int page){ //정수 타입의 페이지 번호를 입력받아 해당 페이지의 Page객체를 리턴

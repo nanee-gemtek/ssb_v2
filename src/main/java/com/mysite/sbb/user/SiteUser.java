@@ -23,7 +23,7 @@ public class SiteUser {
 
     private String password; //SHA1
 
-    private String apiPassword; //BCrypt
+    //private String apiPassword; //BCrypt
 
     @Column(unique = true)
     private String email;

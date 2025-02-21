@@ -21,6 +21,9 @@
             <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
             <div class="d-flex justify-content-end">
                 <div class="badge bg-light text-dark p-2 text-start">
+                    <div class="mb-2">
+                        <span th:if="${answer.username != null}" th:text="${answer.username}"></span>
+                    </div>
                     <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
                 </div>
             </div>
@@ -39,10 +42,11 @@
     <!-- 폼 제출의 경우에는 hidden input을 통해 데이터를 함께 전달하는 방식이 더 선호 -->
     <!--  DTO 객체에 폼 데이터를 바인딩하는 방식 -->
     <form th:action="@{/answer/create}" th:object="${answerDTO}" method="post" class="my-3">
-        <textarea th:field="*{content}" id="content" rows="10" class="form-control"></textarea>
+        <textarea sec:authorize="isAnonymous()"  disabled th:field="*{content}" id="content" rows="10" class="form-control"></textarea>
+        <textarea sec:authorize="isAuthenticated()" th:field="*{content}" class="form-control" rows="10"></textarea>
         <!-- questionId를 hidden input으로 전달 -->
         <input type="hidden" th:field="*{questionId}" th:value="${questionId}" />
-        <input type="submit" value="답변등록" class="btn btn-primary my-2">
+        <input type="submit" value="답변등록" class="btn btn-primary my-2"  sec:authorize="isAnonymous()"  disabled>
     </form>
     <script type='text/javascript'>
         const delete_elements = document.getElementsByClassName("delete");

@@ -1,7 +1,11 @@
 package com.mysite.sbb.question;
 
 import com.mysite.sbb.answer.Answer;
-import lombok.*;
+import com.mysite.sbb.user.SiteUser;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -29,6 +33,9 @@ public class Question {
     //CascadeType.REMOVE 질문삭제시 그에 달린 답변도 삭제
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private List<Answer> answerList;
+
+    @ManyToOne //사용자 한명이 질문 여러개를 작성할 수 있음
+    private SiteUser author;
 
     //엔티티 카멜표기 -> 언더바로 변경
 
