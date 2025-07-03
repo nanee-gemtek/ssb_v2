@@ -1,10 +1,10 @@
 body{
-        background-color: #e8e8e8;
+    background-color: #e8e8e8;
 }
 /* 전체 헤더 */
 header {
   width: 100%;
-
+  height:133px;
   font-family: 'Noto Sans KR', sans-serif;
 }
 /* 공통 컨테이너 - 가운데 정렬, 최대 너비 제한 */
@@ -23,7 +23,9 @@ header {
 }
 
 
-.header_top{padding:20px 20px;}
+.header_top{
+    padding: 20px var(--padding-64);
+}
 
 /* 로고 */
 .logo {
@@ -37,7 +39,7 @@ header {
   display: flex;
   margin: 0;
   padding: 0;
-  gap: 30px;
+  gap: 40px;
 }
 
 .list_nav a.nav-link {
@@ -58,8 +60,8 @@ header {
   color: white;
   font-size: 15px;
   display: flex;
-      justify-content: flex-end;
-      padding:10px 20px;
+  justify-content: flex-end;
+  padding: 10px var(--padding-64);
 }
 
 .header_bottom ul {
@@ -79,3 +81,34 @@ header {
 .header_bottom a.nav-link:hover {
   text-decoration: underline;
 }
+
+
+/* footer*/
+footer .container{
+    background-color:#fff;
+    max-width: 1410px;
+    /*padding:50px 0;*/
+      /*padding: 79.3px var(--padding-64) var(--padding-80);*/
+      padding: 50px var(--padding-64);
+      box-sizing: border-box;
+      font-size:16px;
+      gap: 100px;
+      display: flex;
+        /*justify-content: space-between;*/
+            flex-direction: row;
+}
+footer .list_footer ul{
+    display: flex;
+    flex-direction: row;
+    gap:10px;
+    flex-wrap: wrap;
+    line-height:1.2;
+}
+footer .list_footer li{
+    color:var(--color-text);
+    white-space: normal;   /* ✅ 텍스트 줄바꿈 허용 */
+      word-break: break-word; /* ✅ 긴 단어도 줄바꿈 */
+      flex: 0 0 auto;
+      line-height:1.2;
+}
+footer p{margin-top:30px;}

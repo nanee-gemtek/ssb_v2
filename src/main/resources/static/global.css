@@ -1,3 +1,82 @@
+/* -----------------------------------
+   기본 Reset
+----------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* -----------------------------------
+   기본 태그 리셋
+----------------------------------- */
+html, body {
+  height: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  line-height: 1.5;
+  color: #222;
+  -webkit-font-smoothing: antialiased;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+
+input, textarea, select, button {
+  font: inherit;
+  color: inherit;
+  outline: none;
+}
+
+/* Remove number input spinner in Chrome/Safari */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove autofill background color */
+input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px white inset;
+  -webkit-text-fill-color: #000;
+}
+
+/* -----------------------------------
+   Table
+----------------------------------- */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* -----------------------------------
+   Heading normalization
+----------------------------------- */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  font-size: inherit;
+}
 body {
   margin: 0;
   line-height: normal;
@@ -6,7 +85,8 @@ body {
 :root {
   /* Color */
   --color-dimgray: #545454;
-  --color-gold: #e6c400;
+  /*--color-gold: #e6c400;*/
+  --color-gold: #3F8EFC;
   --wwwvegacom-Alto: #d6d6d6;
 
   /* Padding */
@@ -76,7 +156,7 @@ body {
   --color-grey-93: #eee;
   --color-yellow-50-0: rgba(255, 222, 0, 0);
   --color-grey-84: #d6d6d6;
-  --color-yellow-50: #ffde00;
+  --color-yellow-50: #3F8EFC;
   --color-grey-13: #222;
   --color-white-60: rgba(255, 255, 255, 0.6);
   --color-grey-24-0: rgba(62, 62, 62, 0);
@@ -88,4 +168,14 @@ body {
   /* Font */
   --font-family-Font-1: Material Icons;
   --font-family-Font-2: Open Sans;
+}
+
+
+.mobile-only{
+	display:none;
+}
+
+
+footer{
+    position: relative;
 }
