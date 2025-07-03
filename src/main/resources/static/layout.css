@@ -1,0 +1,81 @@
+body{
+        background-color: #e8e8e8;
+}
+/* 전체 헤더 */
+header {
+  width: 100%;
+
+  font-family: 'Noto Sans KR', sans-serif;
+}
+/* 공통 컨테이너 - 가운데 정렬, 최대 너비 제한 */
+.header_top,
+.header_bottom {
+   max-width: 1410px;
+   margin: 0 auto;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   box-sizing: border-box;
+}
+
+.header_top{
+   background-color: #fff;
+}
+
+
+.header_top{padding:20px 20px;}
+
+/* 로고 */
+.logo {
+  height: 35px;
+  object-fit: contain;
+}
+
+/* 상단 메뉴 */
+.list_nav ul {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  gap: 30px;
+}
+
+.list_nav a.nav-link {
+  text-decoration: none;
+  color: #222;
+  font-weight: 500;
+  font-size: 20px;
+
+}
+
+.list_nav a.nav-link:hover {
+  color: #0072ff;
+}
+
+/* 하단 메뉴 (예: 전화번호, 로그인 등) */
+.header_bottom {
+  background-color: #21293c;
+  color: white;
+  font-size: 15px;
+  display: flex;
+      justify-content: flex-end;
+      padding:10px 20px;
+}
+
+.header_bottom ul {
+  list-style: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.header_bottom a.nav-link {
+  color: white;
+  text-decoration: none;
+}
+
+.header_bottom a.nav-link:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,91 @@
+body {
+  margin: 0;
+  line-height: normal;
+}
+
+:root {
+  /* Color */
+  --color-dimgray: #545454;
+  --color-gold: #e6c400;
+  --wwwvegacom-Alto: #d6d6d6;
+
+  /* Padding */
+  --padding-1: 1px;
+  --padding-2: 2px;
+  --padding-4: 4px;
+  --padding-8: 8px;
+  --padding-10: 10px;
+  --padding-12: 12px;
+  --padding-15: 15px;
+  --padding-16: 16px;
+  --padding-20: 20px;
+  --padding-24: 24px;
+  --padding-64: 64px;
+  --padding-80: 80px;
+
+  /* BorderRadius */
+  --br-8: 8px;
+
+  /* FontSize */
+  --font-size-16: 16px;
+  --font-size-19: 19px;
+  --font-size-24: 24px;
+  --font-size-26: 26px;
+  --font-size-32: 32px;
+
+  /* Figma Variables */
+
+  /* Spacing */
+  --radius-8: 8px;
+  --opacity-75: 0.75;
+  --opacity-70: 0.7;
+  --opacity-100: 1;
+  --font-size-14: 14px;
+  --font-weight-400: 400;
+  --font-weight-600: 600;
+  --stroke-weight-1: 1px;
+  --font-size-10: 10px;
+  --item-spacing-12: 12px;
+  --line-height-17: 17px;
+  --font-size-18: 18px;
+  --font-size-20: 20px;
+  --line-height-23-8: 23.8px;
+  --radius-24: 24px;
+  --line-height-27-2: 27.2px;
+  --line-height-30-6: 30.6px;
+  --item-spacing-31-99: 31.99px;
+  --item-spacing-39-99: 39.99px;
+  --height-40: 40px;
+  --line-height-41-6: 41.6px;
+  --height-41-8: 41.8px;
+  --line-height-52: 52px;
+  --width-230: 230px;
+  --width-280: 280px;
+  --width-300: 300px;
+  --width-302-48: 302.48px;
+  --width-350: 350px;
+  --width-613-72: 613.72px;
+  --width-644: 644px;
+  --height-820: 820px;
+  --width-1410: 1410px;
+  --width-1440: 1440px;
+  --width-9728: 9728px;
+
+  /* Color */
+  --color-grey-33: #555;
+  --color-grey-93: #eee;
+  --color-yellow-50-0: rgba(255, 222, 0, 0);
+  --color-grey-84: #d6d6d6;
+  --color-yellow-50: #ffde00;
+  --color-grey-13: #222;
+  --color-white-60: rgba(255, 255, 255, 0.6);
+  --color-grey-24-0: rgba(62, 62, 62, 0);
+  --color-grey-24: #3e3e3e;
+  --color-grey-96: #f4f4f4;
+  --color-white-solid: #fff;
+  --color-grey-91: #e8e8e8;
+
+  /* Font */
+  --font-family-Font-1: Material Icons;
+  --font-family-Font-2: Open Sans;
+}
