@@ -1,0 +1,48 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/layout}">
+<div layout:fragment="content" class="container my-4">
+
+    <h2 class="mb-4" th:text="${product.name}">제품명</h2>
+    <h5 class="text-muted" th:text="${product.title}">타이틀</h5>
+    <p class="text-muted" th:text="${product.subtitle}">서브타이틀</p>
+    <p><strong>작성자:</strong> <span th:text="${product.username}"></span></p>
+    <p><strong>작성일시:</strong> <span th:text="${#temporals.format(product.createDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+
+    <hr/>
+
+    <!-- 이미지 미리보기 -->
+    <div class="row my-4" th:if="${product.imagePaths != null}">
+        <div class="col-md-3 mb-3" th:each="imgPath : ${product.imagePaths}">
+            <img th:src="@{${imgPath}}" class="img-fluid rounded shadow-sm" alt="제품 이미지"/>
+        </div>
+    </div>
+    <p><strong>카테고리:</strong> <span th:text="${product.categoryName}">카테고리명</span></p>
+
+
+    <!-- 적용 분야 -->
+    <h4 class="mt-4">적용 분야</h4>
+    <div th:utext="${product.applicationArea}"></div>
+
+    <!-- 장점 -->
+    <h4 class="mt-4">장점</h4>
+    <div th:utext="${product.advantages}"></div>
+
+    <!-- 기술사양 -->
+    <h4 class="mt-4">기술사양</h4>
+    <div th:utext="${product.specifications}"></div>
+
+    <!-- 승인 -->
+    <h4 class="mt-4">승인</h4>
+    <div th:utext="${product.certification}"></div>
+
+    <!-- 디스플레이 및 조정 -->
+    <h4 class="mt-4">디스플레이 및 조정</h4>
+    <div th:utext="${product.displayControl}"></div>
+
+    <div class="mt-4">
+        <a href="/user/product/list" class="btn btn-secondary">목록으로</a>
+    </div>
+
+</div>
+</html>

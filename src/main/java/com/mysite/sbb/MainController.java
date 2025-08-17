@@ -19,8 +19,18 @@ public class MainController {
 //        return "redirect:/question/list";
 //    }
     @GetMapping("/")
-    public String list(Model model){ //매개변수로 Model을 지정하면 객체가 자동으로 생성된다.
-        return "index";
+    public String userIndx(Model model){ //매개변수로 Model을 지정하면 객체가 자동으로 생성된다.
+        return "user/index";
     }
 
+
+
+    @GetMapping("/admin/login")
+    public String adminLogin(){ //매개변수로 Model을 지정하면 객체가 자동으로 생성된다.
+        return "admin/siteUser/login_form";
+    }
+    @GetMapping("/product")
+    public String product(Model model){ //매개변수로 Model을 지정하면 객체가 자동으로 생성된다.
+        return "product";
+    }
 }

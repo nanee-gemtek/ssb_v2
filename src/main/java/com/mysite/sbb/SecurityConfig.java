@@ -26,11 +26,11 @@ public class SecurityConfig {
                 //formLogin 메서드는 스프링 시큐리티의 로그인 설정을 담당하는 부분
                 //로그인 페이지의 URL은 "/user/login"이고 로그인 성공시 "/"으로 이동한다.
                 .formLogin((formLogin) -> formLogin
-                        .loginPage("/user/login")
-                        .defaultSuccessUrl("/"))
+                        .loginPage("/siteUser/login")
+                        .defaultSuccessUrl("/admin/product/list"))
         .logout((logout) -> logout
-                .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
-                .logoutSuccessUrl("/")
+                .logoutRequestMatcher(new AntPathRequestMatcher("/siteUser/logout"))
+                .logoutSuccessUrl("/admin/login")
                 .invalidateHttpSession(true));
         return http.build();
     }

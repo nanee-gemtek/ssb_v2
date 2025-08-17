@@ -1,6 +1,8 @@
-<html layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/layout}">
 <div layout:fragment="content" class="container my-3">
-    <form th:action="@{/user/login}" method="post">
+    <form th:action="@{/siteUser/login}" method="post">
         <div th:if="${param.error}">
             <div class="alert alert-danger">
                 사용자ID 또는 비밀번호를 확인해 주세요.

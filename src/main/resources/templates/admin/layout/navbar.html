@@ -1,0 +1,30 @@
+<nav th:fragment="navbarFragment">
+    <header>
+        <div class="header_top">
+                <a class="navbar-brand" href="/admin/index">ADMIN</a>
+                <div class="list_nav">
+                    <ul>
+                        <li><a class="nav-link" href="user/product/list">Product</a></li>
+                        <li><a class="nav-link" href="/case">Case Study</a></li>
+                        <li><a class="nav-link" href="/download">Download</a></li>
+                        <li><a class="nav-link" href="/support">Support</a></li>
+                    </ul>
+                </div>
+        </div>
+
+    </header>
+
+
+    <!-- 추후 로그인 만들때 참고-->
+    <!--<div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/user/login}" sec:authorize="isAnonymous()">로그인</a>
+                <a class="nav-link" th:href="@{/user/logout}" sec:authorize="isAuthenticated()">로그아웃</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/user/singup}">회원가입</a>
+            </li>
+        </ul>
+    </div>-->
+</nav>
