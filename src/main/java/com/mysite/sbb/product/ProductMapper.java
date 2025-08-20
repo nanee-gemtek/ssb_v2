@@ -18,6 +18,7 @@ public interface ProductMapper {
     @Mapping(target = "imagePaths", expression = "java(mapImagePaths(product))") // ✅ 이 줄 추가
     @Mapping(target = "images", ignore = true) // ✅ 이 줄 추가: MultipartFile 무시
     @Mapping(target = "categoryName", source = "category.name")  // ✅ 카테고리명 매핑
+    @Mapping(target = "producerName", source = "producer.name")  // ✅ 제조사명 매핑
     ProductDTO toDTO(Product product);
 
     // imagePath 추출용 default 메서드

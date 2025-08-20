@@ -3,6 +3,8 @@ package com.mysite.sbb.product;
 import com.mysite.sbb.DataNotFoundException;
 import com.mysite.sbb.category.Category;
 import com.mysite.sbb.category.CategoryRepository;
+import com.mysite.sbb.producer.Producer;
+import com.mysite.sbb.producer.ProducerRepository;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,8 @@ public class ProductService {
     private final ProductMapper productMapper;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final ProducerRepository producerRepository;
+
 
     public Page<ProductDTO> getList(int page) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "createDate"));
@@ -49,6 +53,10 @@ public class ProductService {
     public void create(ProductDTO dto) {
         SiteUser author = userRepository.findByusername(dto.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // 🔽 선택한 producerId Producer 엔티티 조회
+        Producer producer = producerRepository.findById(dto.getProducerId())
+                .orElseThrow(() -> new IllegalArgumentException("Producer not found"));
 
         // 🔽 선택한 categoryId로 Category 엔티티 조회
         Category category = categoryRepository.findById(dto.getCategoryId())
@@ -66,6 +74,7 @@ public class ProductService {
                 .createDate(LocalDateTime.now())
                 .author(author)
                 .category(category) // ✅ 카테고리 설정
+                .producer(producer)
                 .images(new ArrayList<>())  // ✅ 반드시 추가!
                 .build();
 

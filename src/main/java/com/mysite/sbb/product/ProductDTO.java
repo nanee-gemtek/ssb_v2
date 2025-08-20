@@ -23,8 +23,11 @@ public class ProductDTO {
     private String displayControl;
     private String username;
     private LocalDateTime createDate;
+    private Long producerId;
     private Long categoryId;
+    private String producerName;
     private String categoryName;
+
 
     // 🔽 [1] 사용자가 업로드한 이미지 수신용
     private List<MultipartFile> images;

@@ -1,6 +1,7 @@
 package com.mysite.sbb.product;
 
 import com.mysite.sbb.category.Category;
+import com.mysite.sbb.producer.Producer;
 import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserMapper;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-07T20:18:14+0900",
+    date = "2025-08-17T23:48:02+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 11.0.19 (Oracle Corporation)"
 )
 @Component
@@ -31,6 +32,7 @@ public class ProductMapperImpl implements ProductMapper {
 
         productDTO.username( productAuthorUsername( product ) );
         productDTO.categoryName( productCategoryName( product ) );
+        productDTO.producerName( productProducerName( product ) );
         productDTO.id( product.getId() );
         productDTO.name( product.getName() );
         productDTO.title( product.getTitle() );
@@ -109,6 +111,21 @@ public class ProductMapperImpl implements ProductMapper {
             return null;
         }
         String name = category.getName();
+        if ( name == null ) {
+            return null;
+        }
+        return name;
+    }
+
+    private String productProducerName(Product product) {
+        if ( product == null ) {
+            return null;
+        }
+        Producer producer = product.getProducer();
+        if ( producer == null ) {
+            return null;
+        }
+        String name = producer.getName();
         if ( name == null ) {
             return null;
         }

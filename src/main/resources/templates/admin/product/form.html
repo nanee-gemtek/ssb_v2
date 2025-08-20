@@ -39,6 +39,11 @@
         <label>서브타이틀</label><br/>
         <input type="text" th:field="*{subtitle}" /><br/><br/>
 
+        <label>제조사</label><br/>
+        <select name="producerId">
+            <option th:each="producer : ${producers}" th:value="${producer.id}" th:text="${producer.name}"></option>
+        </select><br/><br/>
+
         <label>카테고리</label><br/>
         <select name="categoryId">
             <th:block th:each="parent : ${topCategories}">
@@ -74,35 +79,95 @@
     </form>
 
     <script>
-        // CKEditor 초기화
+        // CKEditor 초기화 (현행 코드 유지)
         ['applicationArea', 'advantages', 'specifications', 'certification', 'displayControl'].forEach(id => {
           ClassicEditor.create(document.querySelector(`#${id}`), {
             toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'insertTable', '|', 'undo', 'redo'],
-            table: {
-              contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
-            }
+            table: { contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'] }
           }).catch(err => console.error(err));
         });
 
-        // 이미지 미리보기 기능
+        // === 이미지 업로드 누적 큐 ===
         const imageInput = document.getElementById('imageUpload');
         const imagePreview = document.getElementById('imagePreview');
+        let fileStore = []; // 사용자가 선택한 파일들을 누적 보관
 
-        imageInput.addEventListener('change', () => {
-          imagePreview.innerHTML = ''; // 기존 미리보기 초기화
+        // input.files를 fileStore로 덮어써서 폼 제출 시 여러 장이 전송되도록 만듦
+        function syncInputFromStore() {
+          const dt = new DataTransfer();
+          fileStore.forEach(f => dt.items.add(f));
+          imageInput.files = dt.files; // 최신 브라우저에서 동작 (Chrome/Edge/Firefox/Safari)
+        }
 
-          Array.from(imageInput.files).forEach(file => {
-            if (!file.type.startsWith('image/')) return;
+        function renderPreview() {
+          imagePreview.innerHTML = '';
+          fileStore.forEach((file, idx) => {
+            if (!file.type || !file.type.startsWith('image/')) return;
+
+            const item = document.createElement('div');
+            item.style.display = 'inline-flex';
+            item.style.flexDirection = 'column';
+            item.style.alignItems = 'center';
+            item.style.gap = '6px';
+
+            const img = document.createElement('img');
+            img.style.width = '180px';
+            img.style.height = '120px';
+            img.style.objectFit = 'cover';
+            img.style.border = '1px solid #ccc';
+            img.style.padding = '4px';
+            img.style.backgroundColor = '#f8f8f8';
+
+            const name = document.createElement('div');
+            name.style.fontSize = '12px';
+            name.style.maxWidth = '180px';
+            name.style.whiteSpace = 'nowrap';
+            name.style.overflow = 'hidden';
+            name.style.textOverflow = 'ellipsis';
+            name.title = file.name;
+            name.textContent = file.name;
+
+            const del = document.createElement('button');
+            del.type = 'button';
+            del.textContent = '삭제';
+            del.className = 'btn btn-sm btn-outline-danger';
+            del.onclick = () => {
+              fileStore.splice(idx, 1);     // 큐에서 제거
+              syncInputFromStore();         // input.files 갱신
+              renderPreview();              // 미리보기 다시 그림
+            };
 
             const reader = new FileReader();
-            reader.onload = (e) => {
-              const img = document.createElement('img');
-              img.src = e.target.result;
-              imagePreview.appendChild(img);
-            };
+            reader.onload = e => { img.src = e.target.result; };
             reader.readAsDataURL(file);
+
+            item.appendChild(img);
+            item.appendChild(name);
+            item.appendChild(del);
+            imagePreview.appendChild(item);
           });
+        }
+
+        imageInput.addEventListener('change', () => {
+          const newlySelected = Array.from(imageInput.files);
+
+          // 중복 방지(파일명+크기+수정시각 기준)
+          newlySelected.forEach(f => {
+            const exists = fileStore.some(x =>
+              x.name === f.name && x.size === f.size && x.lastModified === f.lastModified
+            );
+            if (!exists) fileStore.push(f);
+          });
+
+          syncInputFromStore(); // 누적 파일들을 input.files에 반영
+          renderPreview();      // 누적 미리보기 렌더
+        });
+
+        // (선택) 제출 전에 실제 전송될 파일 수 확인하고 싶으면:
+        document.getElementById('productForm').addEventListener('submit', () => {
+          // console.log('전송 파일 수:', imageInput.files.length);
         });
     </script>
+
 </div>
 </html>

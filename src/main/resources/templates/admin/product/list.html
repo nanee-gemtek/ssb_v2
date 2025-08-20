@@ -7,6 +7,7 @@
         <tr>
             <th>번호</th>
             <th style="width:50%">제품명</th>
+            <th>제조사</th>
             <th>작성자</th>
             <th>작성일시</th>
         </tr>
@@ -19,6 +20,8 @@
                     [[${product.name}]]
                 </a>
             </td>
+<!--            <td th:text="${product.producerName}"></td>-->
+            <td>vega</td>
             <td><span th:if="${product.username != null}" th:text="${product.username}"></span></td>
             <td th:text="${#temporals.format(product.createDate, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>

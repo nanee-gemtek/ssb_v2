@@ -12,7 +12,7 @@
 <div layout:fragment="content" class="container my-3">
     <div class="mb-4 text-center">
         <div class="btn-group" role="group">
-            <a th:href="@{/product/list}"
+            <a th:href="@{/user/product/list}"
                th:classappend="${selectedCategory == null} ? 'btn btn-primary' : 'btn btn-outline-primary'"
                class="btn">전체</a>
             <a th:each="cat : ${categories}"
@@ -28,7 +28,7 @@
         <div class="card" th:each="p : ${paging}">
             <div class="card-body">
                 <!-- 상단 배지 (필요 시 표시) -->
-                <!-- <span class="badge" th:text="${p.tier != null ? p.tier : 'BASIC'}">BASIC</span> -->
+                <span class="badge" th:text="${p.producerName}"></span>
 
                 <!-- 썸네일 + 제품명 -->
                 <div class="card-header">
@@ -39,11 +39,16 @@
                         <div class="category" th:text="${p.categoryName != null ? p.categoryName : 'Product'}">Product</div>
                         <a class="product-link"
                            th:href="@{|/user/product/detail/${p.id}|}"
-                           th:text="${p.name}">VEGAPULS 6X</a>
+                           th:text="${p.name}"></a>
+                        <!-- 설명 -->
+                        <p class="desc" th:text="${p.subtitle}"></p>
+                        <a class="btn" th:href="@{|/user/product/detail/${p.id}|}">Show Product</a>
                     </div>
                 </div>
 
-                <!-- 핵심 스펙 -->
+
+
+                <!-- 핵심 스펙
                 <ul class="spec-list">
                     <li>
                         <span>Measuring range - Distance</span>
@@ -54,15 +59,11 @@
                         <strong th:text="${p.subtitle}"></strong>
                     </li>
                 </ul>
-
-                <!-- 하단 액션 -->
+-->
+                <!-- 하단 액션
                 <div class="card-footer">
-                    <label>
-                        <input type="checkbox" th:id="'cmp-' + ${p.id}" name="compare" th:value="${p.id}">
-                        compare
-                    </label>
                     <a class="btn" th:href="@{|/user/product/detail/${p.id}|}">Show Product</a>
-                </div>
+                </div>-->
             </div>
         </div>
     </div>

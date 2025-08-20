@@ -1,6 +1,7 @@
 package com.mysite.sbb.product;
 
 import com.mysite.sbb.category.Category;
+import com.mysite.sbb.producer.Producer;
 import com.mysite.sbb.user.SiteUser;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -48,6 +49,9 @@ public class Product {
 
     @ManyToOne
     private Category category; // 상/하위 카테고리
+
+    @ManyToOne
+    private Producer producer; // 제조사
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> images = new ArrayList<>();
