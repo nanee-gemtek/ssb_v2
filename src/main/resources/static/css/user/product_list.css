@@ -1,5 +1,102 @@
+.container.product_list{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+/*카테고리 메뉴*/
+aside.categories-menu {
+  width: 18%;              /* 필요 시 조정 */
+  padding: 8px 0;
+  margin-bottom: 16px;
+  box-sizing: border-box;
+}
+
+.categories-menu .cat-all,
+.categories-menu .cat-list a {
+  display: inline-block;
+  padding: 4px 4px;
+  text-decoration: none;
+  color: #222;
+}
+
+.categories-menu .cat-all {
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.categories-menu .cat-section{
+    /*padding:0 10px;*/
+}
+.categories-menu .cat-title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  border: 0;
+  padding: 6px 0;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.categories-menu .cat-title:focus {
+  outline: 2px solid #cde;
+  outline-offset: 2px;
+}
+
+.categories-menu .caret {
+  transition: transform 0.2s ease;
+}
+
+.categories-menu .cat-section.open .caret {
+  transform: rotate(180deg);
+}
+
+
+
+.categories-menu .cat-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 10px 10px 10px 20px;
+  font-size:14px;
+
+  /* 아코디언 애니메이션 */
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.25s ease, opacity 0.25s ease;
+}
+
+.categories-menu .cat-section.open .cat-list {
+  opacity: 1;
+  /* max-height는 JS에서 실제 높이로 설정 */
+}
+
+.categories-menu .cat-list li + li {
+  margin-top: 4px;
+}
+
+.categories-menu hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 12px 0;
+}
+
+.categories-menu a.active {
+  text-decoration: underline; /* 선택 강조 */
+}
+
+.wrap_list{
+  width:80%;
+  box-sizing: border-box;
+}
+
 /* 카드 그리드 */
 .card-grid {
+  width:100%;
+  box-sizing: border-box;
   display: flex;
   gap: 16px;
   flex-wrap: wrap; /* 줄바꿈 허용 */
@@ -20,10 +117,8 @@
 }
 
 .card:hover {
-  /*transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);*/
   background-color: #f8f9fa; /* 연한 그레이 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 (선택 사항) */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* 부드러운 그림자 (선택 사항) */
 }
 
 /* 카드 내용 */
@@ -138,3 +233,7 @@
  .badge.basic {
      background-color: #dae2e7;
  }
+
+
+
+

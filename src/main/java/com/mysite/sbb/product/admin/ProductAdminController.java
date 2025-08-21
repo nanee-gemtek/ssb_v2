@@ -40,7 +40,7 @@ public class ProductAdminController {
     @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("productDTO", new ProductDTO());
-        model.addAttribute("topCategories", categoryService.getTopCategories());
+        model.addAttribute("topCategories", categoryService.getRootCategories());
         model.addAttribute("producers", producerService.all());
         return "admin/product/form";
     }

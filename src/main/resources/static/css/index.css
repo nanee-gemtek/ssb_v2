@@ -1455,12 +1455,14 @@
   flex-direction: column;
   padding: 0 var(--padding-15);
   box-sizing: border-box;
-  max-width: var(--width-1440);
+  /*max-width: var(--width-1440);*/
+  max-width: 1410px;
 }
 .container{
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
+  background-color:#fff;
 }
 
 

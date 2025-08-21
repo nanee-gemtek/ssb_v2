@@ -17,7 +17,7 @@ public class CategoryController {
 
     @GetMapping("/list")
     public String list(Model model) {
-        model.addAttribute("topCategories", categoryService.getTopCategories());
+        model.addAttribute("topCategories", categoryService.getRootCategories());
         return "category_list";
     }
 
