@@ -38,9 +38,9 @@
         <!-- 루프: 루트별 섹션 -->
         <div class="cat-section"
              th:each="root : ${roots}"
-             th:attr="data-open=${selectedCategoryId != null and (#lists.contains(childrenMap[root.id].![id], selectedCategoryId) or selectedCategoryId == root.id)}">
+             th:attr="data-open=${selectedCategoryId != null and (#lists.contains(childrenMap[root.id].![id], selectedCategoryId) or selectedCategoryId == root.id)},
+              data-root-id=${root.id}">
 
-            <!-- 클릭해서 열고 닫기 (탭포커스/접근성을 위해 button 권장) -->
             <button type="button" class="cat-title" aria-expanded="false">
                 <span th:text="${root.name}">Category</span>
                 <span class="caret" aria-hidden="true">▾</span>
@@ -50,8 +50,7 @@
                 <li th:each="child : ${childrenMap[root.id]}">
                     <a th:href="@{/user/product/list(cat=${child.id})}"
                        th:text="${child.name}"
-                       th:classappend="${selectedCategoryId} == ${child.id} ? 'active'">
-                    </a>
+                       th:classappend="${selectedCategoryId} == ${child.id} ? 'active'"></a>
                 </li>
             </ul>
             <hr/>
