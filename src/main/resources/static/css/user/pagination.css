@@ -1,0 +1,130 @@
+/* ===== Pagination (modern) ===== */
+.pagination {
+  --pg-bg: #fff;
+  --pg-fg: #344054;
+  --pg-border: #d0d5dd;
+  --pg-hover-bg: #f2f4f7;
+  --pg-active-bg: #6b7280;             /* gray-500 */
+  --pg-active-fg: #fff;
+  --pg-active-shadow: rgba(107,114,128,.25);
+
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+  justify-content: center;
+}
+
+.pagination .page-item { /* hook for states only */ }
+
+.pagination .page-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--pg-border);
+  background: var(--pg-bg);
+  color: var(--pg-fg);
+  text-decoration: none;
+  font-weight: 500;
+  line-height: 1;
+  box-shadow: 0 1px 2px rgba(16,24,40,.05);
+  transition: background .15s ease, border-color .15s ease,
+              color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+
+@media (hover: hover) {
+  .pagination .page-link:hover {
+    background: var(--pg-hover-bg);
+    transform: translateY(-1px);
+  }
+}
+
+.pagination .page-link:focus-visible {
+  outline: 3px solid #a4cafe;
+  outline-offset: 2px;
+}
+
+/* Active page */
+.pagination .page-item.active .page-link {
+  background: var(--pg-active-bg);
+  color: var(--pg-active-fg);
+  border-color: var(--pg-active-bg);
+  box-shadow: 0 6px 12px var(--pg-active-shadow);
+  transform: none;
+}
+
+/* Disabled */
+.pagination .page-item.disabled .page-link {
+  opacity: .5;
+  pointer-events: none;
+}
+
+/* Compact / Large variants (선택) */
+.pagination.sm .page-link { min-width: 32px; height: 32px; padding: 0 10px; border-radius: 8px; font-size: 13px; }
+.pagination.lg .page-link { min-width: 48px; height: 48px; padding: 0 16px; border-radius: 12px; font-size: 15px; }
+
+/* 모바일에서 많은 페이지가 생길 때 overflow 처리 */
+@media (max-width: 480px) {
+  .pagination {
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* 다크 모드 */
+@media (prefers-color-scheme: dark) {
+  .pagination {
+    --pg-bg: #0f172a;
+    --pg-fg: #e2e8f0;
+    --pg-border: #1f2937;
+    --pg-hover-bg: #111827;
+    --pg-active-bg: #3b82f6;
+    --pg-active-fg: #fff;
+    --pg-active-shadow: rgba(59,130,246,.35);
+  }
+  .pagination .page-link { box-shadow: 0 1px 2px rgba(0,0,0,.3); }
+}
+
+
+/* 전체 폰트/간격 축소 */
+.pagination {
+  font-size: 13px;
+  gap: 6px;
+  margin: 16px 0;
+}
+
+/* 버튼(링크) 사이즈 축소 */
+.pagination .page-link {
+  min-width: 32px;   /* 40 → 32 */
+  height: 32px;      /* 40 → 32 */
+  padding: 0 8px;    /* 12 → 8 */
+  border-radius: 8px;/* 10 → 8 */
+  box-shadow: 0 1px 1px rgba(16,24,40,.05);
+}
+
+/* 호버 시 살짝만 떠오르게 */
+@media (hover: hover) {
+  .pagination .page-link:hover {
+    transform: translateY(-0.5px);
+  }
+}
+
+/* 활성 상태 그림자도 덜 과하게 */
+.pagination .page-item.active .page-link {
+  box-shadow: 0 4px 8px var(--pg-active-shadow);
+}
+
+/* 모바일: 이미 작아졌으니 여백만 살짝 줄임 */
+@media (max-width: 480px) {
+  .pagination {
+    gap: 5px;
+    padding-bottom: 2px;
+  }
+}

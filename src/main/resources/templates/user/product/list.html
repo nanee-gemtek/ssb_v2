@@ -4,6 +4,7 @@
 
 <head>
     <th:block layout:fragment="head-extra">
+        <link rel="stylesheet" th:href="@{/css/user/pagination.css}">
         <link rel="stylesheet" th:href="@{/css/user/product_list.css}">
 <!--        <script defer th:src="@{/js/category_menu.js}"></script>-->
         <script defer th:src="@{/js/category_menu.js(v=${#dates.createNow().time})}"></script>
@@ -105,31 +106,35 @@
         <!-- 페이징 처리 -->
         <div th:if="${!paging.empty}">
             <ul class="pagination justify-content-center">
+                <!-- 이전 -->
                 <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{|?page=${paging.number}&cat=${selectedCategoryId}|}">
+                       th:href="@{/user/product/list(page=${paging.number - 1}, size=${paging.size}, cat=${selectedCategoryId})}">
                         <span>이전</span>
                     </a>
                 </li>
 
-                <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
-                    th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
-                    th:classappend="${page == paging.number} ? 'active'"
-                    class="page-item">
+                <!-- 페이지 번호 -->
+                <li class="page-item"
+                    th:each="pg : ${#numbers.sequence(0, paging.totalPages - 1)}"
+                    th:if="${pg >= paging.number - 5 and pg <= paging.number + 5}"
+                    th:classappend="${pg == paging.number} ? 'active'">
                     <a class="page-link"
-                       th:href="@{|?page=${page + 1}&cat=${selectedCategoryId}|}"
-                       th:text="${page + 1}">
+                       th:href="@{/user/product/list(page=${pg}, size=${paging.size}, cat=${selectedCategoryId})}"
+                       th:text="${pg + 1}">
                     </a>
                 </li>
 
+                <!-- 다음 -->
                 <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
                     <a class="page-link"
-                       th:href="@{|?page=${paging.number + 2}&cat=${selectedCategoryId}|}">
+                       th:href="@{/user/product/list(page=${paging.number + 1}, size=${paging.size}, cat=${selectedCategoryId})}">
                         <span>다음</span>
                     </a>
                 </li>
             </ul>
         </div>
+
     </div>
 
 </div>
