@@ -42,6 +42,10 @@
     <div th:utext="${product.displayControl}"></div>
 
     <div class="mt-4">
+        <a th:href="@{/admin/product/{id}/edit(id=${product.id})}"
+           class="btn btn-outline-primary">
+            수정하기
+        </a>
         <a href="/admin/product/list" class="btn btn-secondary">목록으로</a>
     </div>
 

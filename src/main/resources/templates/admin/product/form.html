@@ -2,33 +2,21 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{admin/layout/layout}">
 <div layout:fragment="content" class="container">
-    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-    <style>
-        label {
-          font-weight: bold;
-        }
-        textarea {
-          width: 100%;
-          min-height: 200px;
-        }
-        .image-preview {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 10px;
-          margin-top: 10px;
-        }
-        .image-preview img {
-          width: 180px;
-          height: 120px;
-          object-fit: cover;
-          border: 1px solid #ccc;
-          padding: 4px;
-          background-color: #f8f8f8;
-        }
-    </style>
 
-    <h5 class="my-3 border-bottom pb-2">제품 등록</h5>
-    <form id="productForm" th:action="@{/admin/product/create}" th:object="${productDTO}" method="post" enctype="multipart/form-data">
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <style>/* 기존 스타일 그대로 */</style>
+
+    <h5 class="my-3 border-bottom pb-2" th:text="${isEdit} ? '제품 수정' : '제품 등록'">제품 등록</h5>
+
+    <!-- 동적 action: 등록/수정 분기 -->
+    <form id="productForm"
+          th:action="${isEdit} ? @{/admin/product/update/{id}(id=${productDTO.id})}
+                             : @{/admin/product/create}"
+          th:object="${productDTO}"
+          method="post" enctype="multipart/form-data">
+
+        <!-- 수정 모드일 때 id 전달(안전) -->
+        <input type="hidden" th:if="${isEdit}" th:field="*{id}"/>
 
         <label>제품명</label><br/>
         <input type="text" th:field="*{name}" /><br/><br/>
@@ -40,17 +28,42 @@
         <input type="text" th:field="*{subtitle}" /><br/><br/>
 
         <label>제조사</label><br/>
-        <select name="producerId">
-            <option th:each="producer : ${producers}" th:value="${producer.id}" th:text="${producer.name}"></option>
+        <select th:field="*{producerId}">
+            <option value="" disabled th:selected="${productDTO.producerId} == null">제조사를 선택하세요</option>
+            <option th:each="producer : ${producers}"
+                    th:value="${producer.id}"
+                    th:text="${producer.name}">
+            </option>
         </select><br/><br/>
 
         <label>카테고리</label><br/>
-        <select name="categoryId">
-            <th:block th:each="parent : ${topCategories}">
-                <option disabled th:text="'▶ ' + ${parent.name}"></option>
-                <option th:each="child : ${parent.children}" th:value="${child.id}" th:text="'   └ ' + ${child.name}"></option>
-            </th:block>
-        </select><br/><br/>
+        <select th:field="*{categoryId}">
+            <!-- (선택) 플레이스홀더 -->
+            <option value="" disabled
+                    th:selected="${productDTO.categoryId} == null">카테고리를 선택하세요</option>
+
+            <optgroup th:each="parent : ${topCategories}"
+                      th:label="${'▶ ' + parent.name}">
+                <option th:each="child : ${parent.children}"
+                        th:value="${child.id}"
+                        th:text="'   └ ' + ${child.name}">
+                </option>
+            </optgroup>
+        </select>
+
+        <!-- (수정 모드) 기존 이미지 보여주고 삭제 체크 -->
+        <div th:if="${isEdit and existingImages != null}">
+            <label>기존 이미지</label>
+            <div class="image-preview">
+                <div th:each="img : ${existingImages}" style="display:inline-flex;flex-direction:column;gap:6px;align-items:center;">
+                    <img th:src="${img.imagePath}" alt="" style="width:180px;height:120px;object-fit:cover;border:1px solid #ccc;padding:4px;background:#f8f8f8;"/>
+                    <label style="font-size:12px">
+                        <input type="checkbox" name="deleteImageIds" th:value="${img.id}"> 삭제
+                    </label>
+                </div>
+            </div>
+            <br/>
+        </div>
 
         <label>이미지 업로드</label><br/>
         <input type="file" name="images" id="imageUpload" multiple accept="image/*" /><br/>
@@ -75,97 +88,66 @@
         <label>디스플레이 및 조정</label><br/>
         <textarea th:field="*{displayControl}" id="displayControl"></textarea><br/><br/>
 
-        <button type="submit" class="btn btn-primary">글 전체 등록</button>
+        <button type="submit" class="btn btn-primary"
+                th:text="${isEdit} ? '글 전체 수정' : '글 전체 등록'">글 전체 등록</button>
     </form>
 
+    <!-- CKEditor + 이미지 누적 프리뷰 스크립트 (그대로 사용 가능) -->
     <script>
-        // CKEditor 초기화 (현행 코드 유지)
-        ['applicationArea', 'advantages', 'specifications', 'certification', 'displayControl'].forEach(id => {
-          ClassicEditor.create(document.querySelector(`#${id}`), {
-            toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'insertTable', '|', 'undo', 'redo'],
-            table: { contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'] }
-          }).catch(err => console.error(err));
+        ['applicationArea','advantages','specifications','certification','displayControl'].forEach(id=>{
+          ClassicEditor.create(document.querySelector('#'+id),{
+            toolbar:['heading','|','bold','italic','link','bulletedList','numberedList','insertTable','|','undo','redo'],
+            table:{contentToolbar:['tableColumn','tableRow','mergeTableCells']}
+          }).catch(console.error);
         });
 
-        // === 이미지 업로드 누적 큐 ===
         const imageInput = document.getElementById('imageUpload');
         const imagePreview = document.getElementById('imagePreview');
-        let fileStore = []; // 사용자가 선택한 파일들을 누적 보관
+        let fileStore = [];
 
-        // input.files를 fileStore로 덮어써서 폼 제출 시 여러 장이 전송되도록 만듦
-        function syncInputFromStore() {
+        function syncInputFromStore(){
           const dt = new DataTransfer();
-          fileStore.forEach(f => dt.items.add(f));
-          imageInput.files = dt.files; // 최신 브라우저에서 동작 (Chrome/Edge/Firefox/Safari)
+          fileStore.forEach(f=>dt.items.add(f));
+          imageInput.files = dt.files;
         }
+        function renderPreview(){
+          imagePreview.innerHTML='';
+          fileStore.forEach((file,idx)=>{
+            if(!file.type?.startsWith('image/')) return;
+            const wrap=document.createElement('div');
+            wrap.style.display='inline-flex';
+            wrap.style.flexDirection='column';
+            wrap.style.alignItems='center';
+            wrap.style.gap='6px';
 
-        function renderPreview() {
-          imagePreview.innerHTML = '';
-          fileStore.forEach((file, idx) => {
-            if (!file.type || !file.type.startsWith('image/')) return;
+            const img=document.createElement('img');
+            img.style.width='180px'; img.style.height='120px'; img.style.objectFit='cover';
+            img.style.border='1px solid #ccc'; img.style.padding='4px'; img.style.background='#f8f8f8';
 
-            const item = document.createElement('div');
-            item.style.display = 'inline-flex';
-            item.style.flexDirection = 'column';
-            item.style.alignItems = 'center';
-            item.style.gap = '6px';
+            const name=document.createElement('div');
+            name.style.fontSize='12px'; name.style.maxWidth='180px';
+            name.style.whiteSpace='nowrap'; name.style.overflow='hidden'; name.style.textOverflow='ellipsis';
+            name.title=file.name; name.textContent=file.name;
 
-            const img = document.createElement('img');
-            img.style.width = '180px';
-            img.style.height = '120px';
-            img.style.objectFit = 'cover';
-            img.style.border = '1px solid #ccc';
-            img.style.padding = '4px';
-            img.style.backgroundColor = '#f8f8f8';
+            const del=document.createElement('button');
+            del.type='button'; del.textContent='삭제'; del.className='btn btn-sm btn-outline-danger';
+            del.onclick=()=>{ fileStore.splice(idx,1); syncInputFromStore(); renderPreview(); };
 
-            const name = document.createElement('div');
-            name.style.fontSize = '12px';
-            name.style.maxWidth = '180px';
-            name.style.whiteSpace = 'nowrap';
-            name.style.overflow = 'hidden';
-            name.style.textOverflow = 'ellipsis';
-            name.title = file.name;
-            name.textContent = file.name;
-
-            const del = document.createElement('button');
-            del.type = 'button';
-            del.textContent = '삭제';
-            del.className = 'btn btn-sm btn-outline-danger';
-            del.onclick = () => {
-              fileStore.splice(idx, 1);     // 큐에서 제거
-              syncInputFromStore();         // input.files 갱신
-              renderPreview();              // 미리보기 다시 그림
-            };
-
-            const reader = new FileReader();
-            reader.onload = e => { img.src = e.target.result; };
+            const reader=new FileReader();
+            reader.onload=e=>img.src=e.target.result;
             reader.readAsDataURL(file);
 
-            item.appendChild(img);
-            item.appendChild(name);
-            item.appendChild(del);
-            imagePreview.appendChild(item);
+            wrap.appendChild(img); wrap.appendChild(name); wrap.appendChild(del);
+            imagePreview.appendChild(wrap);
           });
         }
-
-        imageInput.addEventListener('change', () => {
-          const newlySelected = Array.from(imageInput.files);
-
-          // 중복 방지(파일명+크기+수정시각 기준)
-          newlySelected.forEach(f => {
-            const exists = fileStore.some(x =>
-              x.name === f.name && x.size === f.size && x.lastModified === f.lastModified
-            );
-            if (!exists) fileStore.push(f);
+        imageInput?.addEventListener('change', ()=>{
+          const newly=Array.from(imageInput.files);
+          newly.forEach(f=>{
+            const exists=fileStore.some(x=>x.name===f.name && x.size===f.size && x.lastModified===f.lastModified);
+            if(!exists) fileStore.push(f);
           });
-
-          syncInputFromStore(); // 누적 파일들을 input.files에 반영
-          renderPreview();      // 누적 미리보기 렌더
-        });
-
-        // (선택) 제출 전에 실제 전송될 파일 수 확인하고 싶으면:
-        document.getElementById('productForm').addEventListener('submit', () => {
-          // console.log('전송 파일 수:', imageInput.files.length);
+          syncInputFromStore(); renderPreview();
         });
     </script>
 

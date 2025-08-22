@@ -3,10 +3,7 @@ package com.mysite.sbb.product;
 import com.mysite.sbb.category.Category;
 import com.mysite.sbb.producer.Producer;
 import com.mysite.sbb.user.SiteUser;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +12,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

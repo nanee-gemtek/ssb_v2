@@ -39,6 +39,8 @@ tasks.named('test') {
 }
 
 //빌드시 테스트 제외
-tasks.withType(Test).configureEach {
-	enabled = false
+tasks.withType(JavaCompile).configureEach {
+	options.compilerArgs += [
+			'-Amapstruct.suppressGeneratorAnnotation=true',
+	]
 }
