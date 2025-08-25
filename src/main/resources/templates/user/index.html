@@ -128,47 +128,131 @@
                 <section class="article2">
                   <div class="container12">
                     <div class="container13">
-                      <div class="what-would-you">
-                        What would you like to measure?
-                      </div>
+                      <div class="what-would-you">What would you like to measure?</div>
                     </div>
+
                     <div class="container14">
-                      <div class="options">
-                        <div class="expand-moresvg-fill">
-                          <img
-                            class="expand-moresvg-icon"
-                            alt=""
-                            src="/images/expand-moresvg.svg"
-                          />
-                        </div>
-                        <div class="container-wrapper">
-                          <div class="container15">
-                            <div class="choose-application">
-                              Choose application
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="options1">
-                        <div class="expand-moresvg-fill">
-                          <img
-                            class="expand-moresvg-icon"
-                            alt=""
-                            src="/images/expand-moresvg.svg"
-                          />
-                        </div>
-                        <div class="container-wrapper">
-                          <div class="container15">
-                            <div class="choose-application">Choose medium</div>
-                          </div>
-                        </div>
-                      </div>
+                      <!-- Choose application = 부모 -->
+                      <select id="parentSelect" name="parent" class="options">
+                        <option value="">-- Select application --</option>
+                        <option th:each="p : ${parentOptions}"
+                                th:value="${p.id}"
+                                th:text="${p.name}"
+                                th:selected="${selectedParentId} != null and ${selectedParentId} == ${p.id}">
+                        </option>
+                      </select>
+
+                      <!-- Choose medium = 자식 -->
+                      <select id="childSelect" name="child"  class="options" disabled>
+                        <option value="">-- Select medium --</option>
+                      </select>
+
+                      <!-- Find a product -->
                       <div class="link5">
-                        <div class="find-a-product">Find a product</div>
+                        <button id="findProductBtn" type="button" class="find-a-product">Find a product</button>
                       </div>
                     </div>
                   </div>
                 </section>
+                <!-- 동적 옵션 주입 -->
+                <script th:inline="javascript">
+                  /*<![CDATA[*/
+                    const childrenOptions   = /*[[${childrenOptions}]]*/ {};
+                    const selectedParentId  = /*[[${selectedParentId}]]*/ null;
+                    const selectedChildId   = /*[[${selectedChildId}]]*/ null;
+
+                    document.addEventListener('DOMContentLoaded', function () {
+                      const $parent = document.getElementById('parentSelect');
+                      const $child  = document.getElementById('childSelect');
+                      const $go     = document.getElementById('findProductBtn');
+
+                      // childrenOptions가 숫자키/문자열키 혼재할 수 있어 안전하게 조회
+                      const getChildren = (rootId) => {
+                        if (!rootId) return [];
+                        return childrenOptions[rootId] || childrenOptions[String(rootId)] || [];
+                      };
+
+                      function resetChild(disabled = true) {
+                        $child.innerHTML = '';
+                        const ph = document.createElement('option');
+                        ph.value = '';
+                        ph.textContent = '-- Select medium --';
+                        $child.appendChild(ph);
+                        $child.disabled = !!disabled;
+                      }
+
+                      function renderChildren(rootId, selChildId) {
+                        const list = getChildren(rootId);
+                        resetChild(list.length === 0);
+                        if (list.length === 0) return;
+
+                        list.forEach(c => {
+                          const opt = document.createElement('option');
+                          opt.value = c.id;
+                          opt.textContent = c.name;
+                          if (selChildId != null && String(selChildId) === String(c.id)) {
+                            opt.selected = true;
+                          }
+                          $child.appendChild(opt);
+                        });
+                        $child.disabled = false;
+                      }
+
+                      // childId만 주어진 경우, 해당 child를 담고 있는 parent를 찾아 자동 복원
+                      function inferParentFromChild(childId) {
+                        if (childId == null) return null;
+                        for (const k in childrenOptions) {
+                          const list = childrenOptions[k] || [];
+                          if (list.some(c => String(c.id) === String(childId))) return k;
+                        }
+                        return null;
+                      }
+
+                      // 초기 복원 로직
+                      (function initRestore() {
+                        let pid = selectedParentId;
+                        let cid = selectedChildId;
+
+                        if (pid == null && cid != null) {
+                          pid = inferParentFromChild(cid);
+                          if (pid != null) {
+                            // 부모 셀렉트도 같이 선택
+                            const opt = Array.from($parent.options).find(o => String(o.value) === String(pid));
+                            if (opt) opt.selected = true;
+                          }
+                        }
+
+                        if (pid != null) {
+                          renderChildren(String(pid), cid);
+                        } else {
+                          resetChild(true);
+                        }
+                      })();
+
+                      // 부모 변경 시 자식 재구성/리셋
+                      $parent.addEventListener('change', () => {
+                        const pid = $parent.value || null;
+                        if (!pid) {
+                          resetChild(true);
+                          return;
+                        }
+                        renderChildren(pid, null);
+                      });
+
+                      // 이동
+                      $go.addEventListener('click', () => {
+                        const cat = $child.value || $parent.value;
+                        if (!cat) {
+                          alert('먼저 카테고리를 선택해 주세요.');
+                          return;
+                        }
+                        // /user/product/list?cat={id} 로 이동
+                        window.location.href = `/user/product/list?cat=${encodeURIComponent(cat)}`;
+                      });
+                    });
+                  /*]]>*/
+                </script>
+
               </div>
               <div class="section2">
                 <section class="container-frame">
