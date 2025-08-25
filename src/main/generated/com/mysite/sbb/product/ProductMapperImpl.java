@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-22T14:18:38+0900",
+    date = "2025-08-25T17:08:59+0900",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 11.0.19 (Oracle Corporation)"
 )
 @Component
@@ -43,6 +43,8 @@ public class ProductMapperImpl implements ProductMapper {
         productDTO.certification( product.getCertification() );
         productDTO.displayControl( product.getDisplayControl() );
         productDTO.createDate( product.getCreateDate() );
+        productDTO.specDocPath( product.getSpecDocPath() );
+        productDTO.operatingDocPath( product.getOperatingDocPath() );
 
         productDTO.imagePaths( mapImagePaths(product) );
 
@@ -69,6 +71,8 @@ public class ProductMapperImpl implements ProductMapper {
         product.displayControl( dto.getDisplayControl() );
         product.createDate( dto.getCreateDate() );
         product.images( multipartFileListToProductImageList( dto.getImages() ) );
+        product.specDocPath( dto.getSpecDocPath() );
+        product.operatingDocPath( dto.getOperatingDocPath() );
 
         return product.build();
     }

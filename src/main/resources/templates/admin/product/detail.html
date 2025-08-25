@@ -17,6 +17,12 @@
             <img th:src="@{${imgPath}}" class="img-fluid rounded shadow-sm" alt="제품 이미지"/>
         </div>
     </div>
+
+    <!-- 문서 -->
+    <a th:if="${product.specDocPath}" th:href="${product.specDocPath}" class="btn btn-sm btn-outline-secondary" target="_blank">Specification</a>
+    <a th:if="${product.operatingDocPath}" th:href="${product.operatingDocPath}" class="btn btn-sm btn-outline-secondary" target="_blank">Operating instruction</a>
+
+
     <p><strong>제조사:</strong> <span th:text="${product.producerName}">제조사명</span></p>
     <p><strong>카테고리:</strong> <span th:text="${product.categoryName}">카테고리명</span></p>
 

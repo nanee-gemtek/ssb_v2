@@ -10,11 +10,15 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
+    @Value("${file.docs-dir}") // 문서 저장 루트 (예: /var/www/uploadDocs)
+    private String docsDir;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // /images/** 요청을 uploadDir 실제 경로로 매핑
         registry.addResourceHandler("/uploadImages/**")
                 .addResourceLocations("file:///" + uploadDir + "/"); // 실제 경로
+        registry.addResourceHandler("/uploadDocs/**")
+                .addResourceLocations("file:///" + docsDir  + "/"); // 실제 경로
     }
 }

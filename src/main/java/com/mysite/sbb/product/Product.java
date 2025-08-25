@@ -54,4 +54,20 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> images = new ArrayList<>();
+
+    /* ----- 문서 경로 추가 ----- */
+    @Column(length = 512)
+    private String specDocPath;         // Specification 문서 경로 (예: /uploadDocs/uuid.pdf)
+
+    @Column(length = 512)
+    private String operatingDocPath;    // Operating instruction 문서 경로
+
+    /* 편의 메서드 (선택) */
+    public boolean hasSpecDoc() {
+        return specDocPath != null && !specDocPath.isBlank();
+    }
+    public boolean hasOperatingDoc() {
+        return operatingDocPath != null && !operatingDocPath.isBlank();
+    }
+
 }

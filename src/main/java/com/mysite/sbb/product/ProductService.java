@@ -29,6 +29,10 @@ public class ProductService {
     @Value("${file.upload-dir}")
     private String uploadDir; // 예: /var/www/uploadImages
 
+    @Value("${file.docs-dir}") // 문서 저장 루트 (예: /var/www/uploadDocs)
+    private String docsDir;
+
+
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
     private final UserRepository userRepository;
@@ -89,13 +93,23 @@ public class ProductService {
         // 새 이미지 저장
         appendImages(product, dto.getImages());
 
+        // 문서 저장 (있을 때만)
+        if (dto.getSpecDoc() != null && !dto.getSpecDoc().isEmpty()) {
+            String path = saveDoc(dto.getSpecDoc());
+            product.setSpecDocPath(path); // 예: /uploadDocs/uuid.pdf
+        }
+        if (dto.getOperatingDoc() != null && !dto.getOperatingDoc().isEmpty()) {
+            String path = saveDoc(dto.getOperatingDoc());
+            product.setOperatingDocPath(path);
+        }
+
         Product saved = productRepository.save(product);
         return saved.getId(); // Integer
     }
 
     /** 수정: 필드/연관관계 갱신 + 이미지 삭제/추가 + 정렬 */
     @Transactional
-    public void update(ProductDTO dto, List<Long> deleteImageIds) {
+    public void update(ProductDTO dto, List<Long> deleteImageIds,boolean deleteSpecDoc, boolean deleteOperatingDoc) {
         Product product = productRepository.findById(dto.getId())
                 .orElseThrow(() -> new DataNotFoundException("Product not found"));
 
@@ -142,6 +156,30 @@ public class ProductService {
 
         // sortOrder 정렬(0..n-1)
         resequenceSortOrders(product);
+
+        // ... 텍스트/연관 갱신, 이미지 삭제/추가 ...
+        // 문서 삭제 플래그 처리
+        if (deleteSpecDoc && product.getSpecDocPath() != null) {
+            deletePhysicalDoc(product.getSpecDocPath());
+            product.setSpecDocPath(null);
+        }
+        if (deleteOperatingDoc && product.getOperatingDocPath() != null) {
+            deletePhysicalDoc(product.getOperatingDocPath());
+            product.setOperatingDocPath(null);
+        }
+
+        // 새 문서 업로드가 있으면 교체
+        if (dto.getSpecDoc() != null && !dto.getSpecDoc().isEmpty()) {
+            deletePhysicalDoc(product.getSpecDocPath());
+            product.setSpecDocPath(saveDoc(dto.getSpecDoc()));
+        }
+        if (dto.getOperatingDoc() != null && !dto.getOperatingDoc().isEmpty()) {
+            deletePhysicalDoc(product.getOperatingDocPath());
+            product.setOperatingDocPath(saveDoc(dto.getOperatingDoc()));
+        }
+
+
+
 
         // 변경 저장
         productRepository.save(product);
@@ -219,4 +257,45 @@ public class ProductService {
             imgs.get(i).setSortOrder(i);
         }
     }
+
+    /* ------- 문서 저장 유틸 ------- */
+
+    private void ensureDocsDir() {
+        File dir = new File(docsDir);
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Failed to create docs directory: " + docsDir);
+        }
+    }
+
+    private String saveDoc(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+
+        // (선택) MIME/확장자 검증
+        // String ct = file.getContentType(); // application/pdf, ...
+        // 허용 확장자: pdf/doc/docx 등 정책에 맞춰 검사 가능
+
+        ensureDocsDir();
+        String original = Optional.ofNullable(file.getOriginalFilename()).orElse("file");
+        String ext = "";
+        int pos = original.lastIndexOf('.');
+        if (pos >= 0) ext = original.substring(pos);
+        String saveName = UUID.randomUUID() + ext;
+
+        Path savePath = Paths.get(docsDir).resolve(saveName);
+        try {
+            file.transferTo(savePath.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException("문서 저장 실패: " + original, e);
+        }
+        // 브라우저에서 접근할 URL 경로 반환
+        return "/uploadDocs/" + saveName;
+    }
+
+    private void deletePhysicalDoc(String urlPath) {
+        if (urlPath == null) return;
+        String fileName = urlPath.substring(urlPath.lastIndexOf('/') + 1);
+        File f = Paths.get(docsDir).resolve(fileName).toFile();
+        if (f.exists()) { try { f.delete(); } catch (Exception ignore) {} }
+    }
+
 }

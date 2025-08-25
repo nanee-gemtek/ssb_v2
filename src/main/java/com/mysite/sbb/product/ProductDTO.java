@@ -34,6 +34,14 @@ public class ProductDTO {
     // 🔽 [2] 저장된 이미지 경로 표시용 (화면에 <img>로 출력할 URL들)
     private List<String> imagePaths; // ProductImage의 imagePath 값들
 
+    // 문서 업로드(단일 파일)
+    private MultipartFile specDoc;            // 사양서
+    private MultipartFile operatingDoc;       // 사용설명서
+
+    // 저장된 문서 경로(URL)
+    private String specDocPath;               // 예: /uploadDocs/abcd.pdf
+    private String operatingDocPath;
+
     public String getThumbnailUrl() {
         if (imagePaths == null || imagePaths.isEmpty() || imagePaths.get(0) == null || imagePaths.get(0).isBlank()) {
             return "/images/product-placeholder.png"; // 정적 기본 이미지

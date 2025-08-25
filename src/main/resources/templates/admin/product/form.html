@@ -70,6 +70,32 @@
         <div id="imagePreview" class="image-preview"></div>
         <br/>
 
+        <!-- 문서 업로드 -->
+        <label>Specification (PDF 등)</label><br/>
+        <input type="file" name="specDoc" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><br/><br/>
+
+        <label>Operating instruction (PDF 등)</label><br/>
+        <input type="file" name="operatingDoc" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><br/><br/>
+
+        <!-- 수정 모드일 때 기존 문서 표시 + 삭제 체크 -->
+        <div th:if="${isEdit}">
+            <div th:if="${productDTO.specDocPath}">
+                현재 사양서: <a th:href="${productDTO.specDocPath}" target="_blank">다운로드</a>
+                <label style="margin-left:8px;">
+                    <input type="checkbox" name="deleteSpecDoc"> 삭제
+                </label>
+            </div>
+            <div th:if="${productDTO.operatingDocPath}" style="margin-top:6px;">
+                현재 사용설명서: <a th:href="${productDTO.operatingDocPath}" target="_blank">다운로드</a>
+                <label style="margin-left:8px;">
+                    <input type="checkbox" name="deleteOperatingDoc"> 삭제
+                </label>
+            </div>
+            <br/>
+        </div>
+
+
+
         <button type="button" class="btn btn-secondary" onclick="alert('이미지 미리보기 완료!')">이미지 미리보기 완료</button>
         <br/><br/>
 

@@ -37,14 +37,13 @@ public class ProductAdminController {
     }
 
     /* ---------------- 등록 ---------------- */
-
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("productDTO", new ProductDTO());
-        model.addAttribute("topCategories", categoryService.getRootCategories()); // 부모 + children 로딩되게!
+        model.addAttribute("topCategories", categoryService.getRootCategories());
         model.addAttribute("producers", producerService.all());
-        model.addAttribute("isEdit", false); // ← 폼에서 삼항 분기
+        model.addAttribute("isEdit", false);
         return "admin/product/form";
     }
 
@@ -52,12 +51,15 @@ public class ProductAdminController {
     @PostMapping("/create")
     public String create(@ModelAttribute ProductDTO dto,
                          @RequestParam(value = "images", required = false) List<MultipartFile> images,
+                         @RequestParam(value = "specDoc", required = false) MultipartFile specDoc,
+                         @RequestParam(value = "operatingDoc", required = false) MultipartFile operatingDoc,
                          Principal principal) {
         dto.setUsername(principal.getName());
-        dto.setImages(images); // 폼에서 올라온 이미지 세팅
-        Integer newId = productService.create(dto); // 생성 후 id 반환하게 해두면 좋음
+        dto.setImages(images);           // 이미지
+        dto.setSpecDoc(specDoc);         // 사양서
+        dto.setOperatingDoc(operatingDoc); // 사용설명서
+        Integer newId = productService.create(dto); // create가 id 반환하도록 서비스 수정
         return "redirect:/admin/product/detail/" + newId;
-        // id 반환이 없다면 기존처럼: return "redirect:/admin/product/list";
     }
 
     /* ---------------- 수정 ---------------- */
@@ -65,11 +67,11 @@ public class ProductAdminController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{id}/edit")
     public String editForm(@PathVariable Integer id, Model model) {
-        ProductDTO dto = productService.getProduct(id); // 수정용 DTO (id/producerId/categoryId/텍스트필드 채워진 상태)
+        ProductDTO dto = productService.getProduct(id); // dto에 specDocPath/operatingDocPath 포함
         model.addAttribute("productDTO", dto);
         model.addAttribute("topCategories", categoryService.getRootCategories());
         model.addAttribute("producers", producerService.all());
-        model.addAttribute("existingImages", productService.findImagesByProductId(id)); // List<ProductImageDTO> 등
+        model.addAttribute("existingImages", productService.findImagesByProductId(id));
         model.addAttribute("isEdit", true);
         return "admin/product/form";
     }
@@ -80,13 +82,21 @@ public class ProductAdminController {
                          @ModelAttribute ProductDTO dto,
                          @RequestParam(value = "images", required = false) List<MultipartFile> images,
                          @RequestParam(value = "deleteImageIds", required = false) List<Long> deleteImageIds,
+                         @RequestParam(value = "specDoc", required = false) MultipartFile specDoc,
+                         @RequestParam(value = "operatingDoc", required = false) MultipartFile operatingDoc,
+                         @RequestParam(value = "deleteSpecDoc", defaultValue = "false") boolean deleteSpecDoc,
+                         @RequestParam(value = "deleteOperatingDoc", defaultValue = "false") boolean deleteOperatingDoc,
                          Principal principal) {
         dto.setId(id);
         dto.setUsername(principal.getName());
         dto.setImages(images);
-        productService.update(dto, deleteImageIds); // 신규 이미지 추가 + 삭제 반영까지 서비스에서 처리
+        dto.setSpecDoc(specDoc);
+        dto.setOperatingDoc(operatingDoc);
+        // 서비스 시그니처: update(dto, deleteImageIds, deleteSpecDoc, deleteOperatingDoc)
+        productService.update(dto, deleteImageIds, deleteSpecDoc, deleteOperatingDoc);
         return "redirect:/admin/product/detail/" + id;
     }
+
 
 
 
