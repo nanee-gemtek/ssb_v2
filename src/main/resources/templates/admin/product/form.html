@@ -36,6 +36,10 @@
             </option>
         </select><br/><br/>
 
+        <label>제품구성: 링크</label><br/>
+        <!--<input type="text" th:field="*{configLink}" /><br/><br/>-->
+        <input type="text" name="configLink" th:value="${productDTO.configLink}">
+
         <label>카테고리</label><br/>
         <select th:field="*{categoryId}">
             <!-- (선택) 플레이스홀더 -->
@@ -109,7 +113,7 @@
         <textarea th:field="*{specifications}" id="specifications"></textarea><br/><br/>
 
         <label>승인</label><br/>
-        <textarea th:field="*{certification}" id="certification"></textarea><br/><br/>
+        <textarea th:field="*{approval}" id="approval"></textarea><br/><br/>
 
         <label>디스플레이 및 조정</label><br/>
         <textarea th:field="*{displayControl}" id="displayControl"></textarea><br/><br/>
@@ -120,7 +124,7 @@
 
     <!-- CKEditor + 이미지 누적 프리뷰 스크립트 (그대로 사용 가능) -->
     <script>
-        ['applicationArea','advantages','specifications','certification','displayControl'].forEach(id=>{
+        ['applicationArea','advantages','specifications','approval','displayControl'].forEach(id=>{
           ClassicEditor.create(document.querySelector('#'+id),{
             toolbar:['heading','|','bold','italic','link','bulletedList','numberedList','insertTable','|','undo','redo'],
             table:{contentToolbar:['tableColumn','tableRow','mergeTableCells']}

@@ -18,15 +18,16 @@ public class ProductDTO {
     private String subtitle;
     private String applicationArea;
     private String advantages;
-    private String specifications;
-    private String certification;
-    private String displayControl;
+    private String specifications; //기술 사양
+    private String approval;//승인
+    private String displayControl;//디스플레이 및 조정
     private String username;
     private LocalDateTime createDate;
     private Long producerId;
     private Long categoryId;
     private String producerName;
     private String categoryName;
+    private String configLink;
 
 
     // 🔽 [1] 사용자가 업로드한 이미지 수신용

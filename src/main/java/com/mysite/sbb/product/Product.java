@@ -35,7 +35,7 @@ public class Product {
     private String specifications;  // 기술사양 (표)
 
     @Column(columnDefinition = "TEXT")
-    private String certification;   // 승인 (표)
+    private String approval;   // 승인 (표)
 
     @Column(columnDefinition = "TEXT")
     private String displayControl;  // 디스플레이 및 조정 (표)
@@ -69,5 +69,7 @@ public class Product {
     public boolean hasOperatingDoc() {
         return operatingDocPath != null && !operatingDocPath.isBlank();
     }
+
+    private String configLink; //제품구성
 
 }

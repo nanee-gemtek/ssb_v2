@@ -21,6 +21,7 @@ public interface ProductMapper {
     @Mapping(target = "producerName", source = "producer.name")  // ✅ 제조사명 매핑
     @Mapping(target = "specDoc", ignore = true)         // MultipartFile 무시
     @Mapping(target = "operatingDoc", ignore = true)    // MultipartFile 무시
+    @Mapping(target = "configLink", source = "configLink") // 명시
     ProductDTO toDTO(Product product);
 
     // imagePath 추출용 default 메서드

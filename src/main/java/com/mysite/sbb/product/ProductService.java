@@ -81,7 +81,7 @@ public class ProductService {
                 .applicationArea(dto.getApplicationArea())
                 .advantages(dto.getAdvantages())
                 .specifications(dto.getSpecifications())
-                .certification(dto.getCertification())
+                .approval(dto.getApproval())
                 .displayControl(dto.getDisplayControl())
                 .createDate(LocalDateTime.now())
                 .author(author)
@@ -120,8 +120,9 @@ public class ProductService {
         product.setApplicationArea(dto.getApplicationArea());
         product.setAdvantages(dto.getAdvantages());
         product.setSpecifications(dto.getSpecifications());
-        product.setCertification(dto.getCertification());
+        product.setApproval(dto.getApproval());
         product.setDisplayControl(dto.getDisplayControl());
+        product.setConfigLink(dto.getConfigLink());
 
         // 연관 갱신
         if (dto.getProducerId() != null) {
