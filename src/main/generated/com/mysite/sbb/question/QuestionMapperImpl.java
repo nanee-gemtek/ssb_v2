@@ -11,11 +11,7 @@ import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Generated(
-    value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-08-22T14:18:38+0900",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 11.0.19 (Oracle Corporation)"
-)
+
 @Component
 public class QuestionMapperImpl implements QuestionMapper {
 
