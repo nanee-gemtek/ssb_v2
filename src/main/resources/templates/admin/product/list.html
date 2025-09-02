@@ -7,7 +7,7 @@
         <tr>
             <th>번호</th>
             <th style="width:50%">제품명</th>
-<!--            <th>카테고리 1</th>-->
+            <th>카테고리 1</th>
 <!--            <th>카테고리 2</th>-->
             <th>제조사</th>
             <th>작성자</th>
@@ -22,6 +22,7 @@
                     [[${product.name}]]
                 </a>
             </td>
+            <td th:text="${product.categoryName != null ? product.categoryName : 'category'}"></td>
             <td th:text="${product.producerName}"></td>
 <!--            <td>vega</td>-->
             <td><span th:if="${product.username != null}" th:text="${product.username}"></span></td>

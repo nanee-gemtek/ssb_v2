@@ -1,0 +1,105 @@
+.product_content{
+    border:1px solid blue;
+    display: flex;
+}
+.pc_left{border:1px solid red;width:100%;}
+.pc_right{border:1px solid purple;width:70%;}
+.pc_btns{border:1px solid orange;width:10%;}
+
+/*이미지 슬라이더*/
+.imgContainer {
+  max-width: 100%;
+  margin: 0 auto;
+}
+.carousel-cell {
+  background: #8c8;
+  counter-increment: carousel-cell;
+  color: white;
+  width: 100%;
+}
+
+.carousel-cell:before {
+  display: block;
+  text-align: center;
+  content: counter(carousel-cell);
+  height: 100%;
+  width: 100%;
+  font-size: 80px;
+  color: white;
+}
+
+.carousel-main .carousel-cell {
+  width: 100%;
+  font-size: 5rem;
+  padding-bottom: 56.25%;
+}
+
+.carousel-main .carousel-cell:before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-nav .carousel-cell:before {
+  transform: rotate(-90deg);
+}
+
+.carousel-nav {
+  width: 540px;
+  height: 80px;
+  transform: rotate(90deg) translate(30px, -100%);
+  transform-origin: left top;
+}
+.carousel-cell {
+  transform: rotate(-90deg);
+  width: 80px;
+  height: 80px;
+  cursor: pointer;
+  font-size: 1.4rem;
+}
+
+.carousel-nav .carousel-cell {
+  margin-right: 1rem;
+}
+
+/* selected cell */
+.carousel-nav .carousel-cell.is-nav-selected {
+  background: #ed2;
+}
+
+.flickity-prev-next-button {
+  width: 40px;
+  height: 40px;
+  background: transparent;
+}
+
+.flickity-prev-next-button .previous {
+  left: -40px;
+}
+.flickity-prev-next-button .next {
+  right: -40px;
+}
+.row .left {
+  max-width: 80px;
+  margin-right: 2%;
+  flex: 1 1 100%;
+}
+.row .right {
+  flex: 1 1 0;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.carousel-nav .flickity-prev-next-button.next {
+  right: -30px;
+}
+.carousel-nav .flickity-prev-next-button.previous {
+  left: -30px;
+}
