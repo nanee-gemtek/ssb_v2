@@ -18,29 +18,25 @@
     <div class="product_content">
         <div class="pc_left">
             <section>
-                <div class="imgContainer">
-                    <h1>Flickity Slider with Vertical Thumbnail</h1>
-
-                    <div class="row" th:if="${product.imagePaths != null and !#lists.isEmpty(product.imagePaths)}">
-                        <div class="left">
-                            <!-- 썸네일 캐러셀: asNavFor 로 메인 연동 -->
-                            <div class="carousel carousel-nav"
-                                 data-flickity='{ "asNavFor": ".carousel-main", "contain": true, "pageDots": false, "setGallerySize": false ,"prevNextButtons":false}'>
-                                <!-- ✅ 셀 반복 -->
-                                <div class="carousel-cell" th:each="imgPath : ${product.imagePaths}">
-                                    <img th:src="${imgPath}" class="img-fluid rounded shadow-sm" alt="제품 이미지 썸네일"/>
-                                </div>
+                <div class="pc_gallery" th:if="${product.imagePaths != null and !#lists.isEmpty(product.imagePaths)}">
+                    <div class="left">
+                        <!-- 썸네일 캐러셀: asNavFor 로 메인 연동 -->
+                        <div class="carousel carousel-nav"
+                             data-flickity='{ "asNavFor": ".carousel-main", "contain": true, "pageDots": false, "setGallerySize": false ,"prevNextButtons":false, "cellAlign":"right"}'>
+                            <!-- ✅ 셀 반복 -->
+                            <div class="carousel-cell" th:each="imgPath : ${product.imagePaths}">
+                                <img th:src="${imgPath}" class="img-fluid rounded shadow-sm" alt="제품 이미지 썸네일"/>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="right">
-                            <!-- 메인 캐러셀: sync 불필요 -->
-                            <div class="carousel carousel-main"
-                                 data-flickity='{ "prevNextButtons": false, "pageDots": false, "wrapAround": true }'>
-                                <!-- ✅ 셀 반복 -->
-                                <div class="carousel-cell" th:each="imgPath : ${product.imagePaths}">
-                                    <img th:src="${imgPath}" class="img-fluid rounded shadow-sm" alt="제품 이미지"/>
-                                </div>
+                    <div class="right">
+                        <!-- 메인 캐러셀: sync 불필요 -->
+                        <div class="carousel carousel-main"
+                             data-flickity='{ "prevNextButtons": false, "pageDots": false, "wrapAround": true }'>
+                            <!-- ✅ 셀 반복 -->
+                            <div class="carousel-cell" th:each="imgPath : ${product.imagePaths}">
+                                <img th:src="${imgPath}" class="img-fluid rounded shadow-sm" alt="제품 이미지"/>
                             </div>
                         </div>
                     </div>
@@ -49,19 +45,19 @@
         </div>
 
         <div class="pc_right">
-            <h2 class="" th:text="${product.name}">제품명</h2>
-            <h5 class="" th:text="${product.title}">타이틀</h5>
-            <p class="" th:text="${product.subtitle}">서브타이틀</p>
+            <h2 class="pc_name" th:text="${product.name}">제품명</h2>
+            <h3 class="pc_title" th:text="${product.title}">타이틀</h3>
+            <h4 class="pc_subtitle" th:text="${product.subtitle}">서브타이틀</h4>
+            <div class="pc_description">
             <!-- 적용 분야 -->
-            <h4 class="mt-4">적용 분야</h4>
-            <div th:utext="${product.applicationArea}"></div>
+                <h5>Application area</h5>
+                <div th:utext="${product.applicationArea}"></div>
 
-            <!-- 장점 -->
-            <h4 class="mt-4">장점</h4>
-            <div th:utext="${product.advantages}"></div>
+                <!-- 장점 -->
+                <h5 class="mt-4">Your benefit</h5>
+                <div th:utext="${product.advantages}"></div>
+            </div>
         </div>
-
-        <div class="pc_btns"></div>
     </div>
     <div class="product-tables">
         <!-- 기술사양 -->
