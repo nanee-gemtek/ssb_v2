@@ -2,9 +2,14 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{admin/layout/layout}">
 <div layout:fragment="content" class="container my-3">
+    <form th:action="@{/admin/product/delete}" method="post" id="deleteForm">
     <table class="table">
         <thead class="table-dark text-center">
         <tr>
+            <th>
+                <!-- 전체 선택 -->
+                <input type="checkbox" id="checkAll"/>
+            </th>
             <th>번호</th>
             <th style="width:50%">제품명</th>
             <th>카테고리 1</th>
@@ -16,6 +21,9 @@
         </thead>
         <tbody>
         <tr class="text-center" th:each="product, loop : ${paging}">
+            <td>
+                <input type="checkbox" name="productIds" th:value="${product.id}" class="row-check"/>
+            </td>
             <td th:text="${paging.totalElements - (paging.number * paging.size) - loop.index}"></td>
             <td class="text-start">
                 <a th:href="@{|/admin/product/detail/${product.id}|}">
@@ -30,6 +38,7 @@
         </tr>
         </tbody>
     </table>
+
 
     <!-- 페이징 처리 -->
     <div th:if="${!paging.empty}">
@@ -53,6 +62,20 @@
         </ul>
     </div>
 
-    <a th:href="@{create}" class="btn btn-primary">제품 등록하기</a>
+    <div class="mt-3 d-flex justify-content-between">
+        <a th:href="@{create}" class="btn btn-primary">제품 등록하기</a>
+        <button type="submit" class="btn btn-danger">선택 삭제</button>
+    </div>
+    </form>
 </div>
+<!-- 체크박스 전체선택 스크립트 -->
+<script th:inline="javascript">
+    console.log("here");
+    const checkAll = document.getElementById("checkAll");
+    const checkboxes = document.querySelectorAll(".row-check");
+
+    checkAll?.addEventListener("change", (e) => {
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
+    });
+</script>
 </html>

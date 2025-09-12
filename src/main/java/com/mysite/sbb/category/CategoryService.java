@@ -37,9 +37,15 @@ public class CategoryService {
 
     /** 선택 카테고리(자기 자신 + 모든 하위)를 한 번에 제품 조회 */
     public Page<Product> getProductsByCategory(Long categoryId, Pageable pageable) {
-        if (categoryId == null) return productRepository.findAll(pageable);
+        if (categoryId == null) {
+            // 카테고리 지정 안 됨 → 전체 조회
+            return productRepository.findAll(pageable);
+        }
 
+        // 부모 + 모든 하위 카테고리 id 수집
         List<Long> allIds = collectDescendantIdsBFS(categoryId);
+
+        // 해당 id들의 제품을 한 번에 조회
         return productRepository.findByCategoryIdIn(allIds, pageable);
     }
 

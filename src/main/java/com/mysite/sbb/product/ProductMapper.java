@@ -18,7 +18,11 @@ public interface ProductMapper {
     @Mapping(target = "imagePaths", expression = "java(mapImagePaths(product))") // ✅ 이 줄 추가
     @Mapping(target = "images", ignore = true) // ✅ 이 줄 추가: MultipartFile 무시
     @Mapping(target = "categoryName", source = "category.name")  // ✅ 카테고리명 매핑
+    @Mapping(target = "categoryId", source = "category.id")  // ✅ 카테고리id 매핑
+    @Mapping(target = "categoryParentName", source = "category.parent.name") // ✅ 상위 카테고리명 추가
+    @Mapping(target = "categoryParentId", source = "category.parent.id") // ✅ 상위 카테고리 아이디 추가
     @Mapping(target = "producerName", source = "producer.name")  // ✅ 제조사명 매핑
+    @Mapping(target = "producerId", source = "producer.id")  // ✅ 제조사명 매핑
     @Mapping(target = "specDoc", ignore = true)         // MultipartFile 무시
     @Mapping(target = "operatingDoc", ignore = true)    // MultipartFile 무시
     @Mapping(target = "configLink", source = "configLink") // 명시

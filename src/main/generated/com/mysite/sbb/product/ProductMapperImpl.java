@@ -27,7 +27,14 @@ public class ProductMapperImpl implements ProductMapper {
 
         productDTO.username( productAuthorUsername( product ) );
         productDTO.categoryName( productCategoryName( product ) );
+        productDTO.categoryId( productCategoryId( product ) );
+        productDTO.categoryParentName( productCategoryParentName( product ) );
+        Long id1 = productCategoryParentId( product );
+        if ( id1 != null ) {
+            productDTO.categoryParentId( String.valueOf( id1 ) );
+        }
         productDTO.producerName( productProducerName( product ) );
+        productDTO.producerId( productProducerId( product ) );
         productDTO.configLink( product.getConfigLink() );
         productDTO.id( product.getId() );
         productDTO.name( product.getName() );
@@ -118,6 +125,59 @@ public class ProductMapperImpl implements ProductMapper {
         return name;
     }
 
+    private Long productCategoryId(Product product) {
+        if ( product == null ) {
+            return null;
+        }
+        Category category = product.getCategory();
+        if ( category == null ) {
+            return null;
+        }
+        Long id = category.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+
+    private String productCategoryParentName(Product product) {
+        if ( product == null ) {
+            return null;
+        }
+        Category category = product.getCategory();
+        if ( category == null ) {
+            return null;
+        }
+        Category parent = category.getParent();
+        if ( parent == null ) {
+            return null;
+        }
+        String name = parent.getName();
+        if ( name == null ) {
+            return null;
+        }
+        return name;
+    }
+
+    private Long productCategoryParentId(Product product) {
+        if ( product == null ) {
+            return null;
+        }
+        Category category = product.getCategory();
+        if ( category == null ) {
+            return null;
+        }
+        Category parent = category.getParent();
+        if ( parent == null ) {
+            return null;
+        }
+        Long id = parent.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
+    }
+
     private String productProducerName(Product product) {
         if ( product == null ) {
             return null;
@@ -131,6 +191,21 @@ public class ProductMapperImpl implements ProductMapper {
             return null;
         }
         return name;
+    }
+
+    private Long productProducerId(Product product) {
+        if ( product == null ) {
+            return null;
+        }
+        Producer producer = product.getProducer();
+        if ( producer == null ) {
+            return null;
+        }
+        Long id = producer.getId();
+        if ( id == null ) {
+            return null;
+        }
+        return id;
     }
 
     protected ProductImage multipartFileToProductImage(MultipartFile multipartFile) {

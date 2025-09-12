@@ -45,8 +45,9 @@ public class Product {
     @ManyToOne
     private SiteUser author;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne
     private Category category; // 상/하위 카테고리
 
     @ManyToOne

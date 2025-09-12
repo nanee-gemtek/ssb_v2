@@ -1465,7 +1465,10 @@
   justify-content: flex-start;
   background-color:#fff;
 }
-
+/* sub 페이지 */
+.container_sub{
+    padding:0!important;
+}
 
 .link23 {
   cursor: pointer;

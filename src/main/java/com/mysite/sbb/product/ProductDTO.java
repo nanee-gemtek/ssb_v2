@@ -27,6 +27,8 @@ public class ProductDTO {
     private Long categoryId;
     private String producerName;
     private String categoryName;
+    private String categoryParentName;
+    private String categoryParentId;
     private String configLink;
 
 

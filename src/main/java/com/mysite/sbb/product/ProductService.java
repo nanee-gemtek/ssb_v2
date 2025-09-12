@@ -9,13 +9,19 @@ import com.mysite.sbb.user.SiteUser;
 import com.mysite.sbb.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -26,10 +32,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductService {
 
+    //file.upload-dir=/home/web/upload/product
+    //file.docs-dir=/home/web/upload/docs
     @Value("${file.upload-dir}")
-    private String uploadDir; // 예: /var/www/uploadImages
+    private String uploadDir; // 이미지 저장 루트
 
-    @Value("${file.docs-dir}") // 문서 저장 루트 (예: /var/www/uploadDocs)
+    @Value("${file.docs-dir}") // 문서 저장 루트
     private String docsDir;
 
 
@@ -298,5 +306,67 @@ public class ProductService {
         File f = Paths.get(docsDir).resolve(fileName).toFile();
         if (f.exists()) { try { f.delete(); } catch (Exception ignore) {} }
     }
+
+    @Transactional
+    public void deleteProducts(List<Integer> productIds) {
+        if (productIds == null || productIds.isEmpty()) return;
+
+        // 0) 파일 경로 미리 수집 (DB 삭제 이전에)
+        // 0-1) 이미지 파일 경로
+        List<String> imageUrlPaths = productImageRepository.findPathsByProductIdIn(productIds);
+
+        // 0-2) 문서 파일 경로 (specDoc/operatingDoc)
+        List<Product> productsForDocs = productRepository.findAllForDocPaths(productIds);
+
+        List<Path> fileTargets = new ArrayList<>();
+        // 이미지
+        for (String urlPath : imageUrlPaths) {
+            Path p = toLocalImagePath(urlPath);
+            if (p != null) fileTargets.add(p);
+        }
+        // 문서
+        for (Product p : productsForDocs) {
+            Path spec = toLocalDocPath(p.getSpecDocPath());
+            if (spec != null) fileTargets.add(spec);
+            Path oper = toLocalDocPath(p.getOperatingDocPath());
+            if (oper != null) fileTargets.add(oper);
+        }
+
+        // 1) 자식(이미지) 먼저 벌크 삭제
+        productImageRepository.deleteByProductIdIn(productIds);
+
+        // 2) 부모(제품) 벌크 삭제
+        productRepository.deleteAllByIdInBatch(productIds);
+
+        // 3) 트랜잭션 커밋 이후 실제 파일 삭제 (DB 롤백 시 파일 보존)
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override public void afterCommit() {
+                for (Path path : fileTargets) {
+                    try { Files.deleteIfExists(path); } catch (Exception ignore) { /* 로그 원하면 기록 */ }
+                }
+            }
+        });
+    }
+
+    private Path toLocalImagePath(String urlPath) {
+        if (urlPath == null || urlPath.isBlank()) return null;
+        String p = urlPath.trim().replace('\\', '/');
+        if (!p.startsWith("/uploadImages/")) return null;
+        String rel = p.substring("/uploadImages/".length());
+        Path resolved = Paths.get(uploadDir, rel).normalize();
+        Path base = Paths.get(uploadDir).toAbsolutePath().normalize();
+        return resolved.toAbsolutePath().startsWith(base) ? resolved : null;
+    }
+
+    private Path toLocalDocPath(String urlPath) {
+        if (urlPath == null || urlPath.isBlank()) return null;
+        String p = urlPath.trim().replace('\\', '/');
+        if (!p.startsWith("/uploadDocs/")) return null;
+        String rel = p.substring("/uploadDocs/".length());
+        Path resolved = Paths.get(docsDir, rel).normalize();
+        Path base = Paths.get(docsDir).toAbsolutePath().normalize();
+        return resolved.toAbsolutePath().startsWith(base) ? resolved : null;
+    }
+
 
 }

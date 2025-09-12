@@ -25,7 +25,8 @@ public class Category {
     private Integer sortOrder = 0;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    //@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "parent_id")
     private Category parent;
 
