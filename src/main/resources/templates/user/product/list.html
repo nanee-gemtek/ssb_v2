@@ -58,16 +58,34 @@
     </aside>
 
     <div class="wrap_list">
+        <!-- Producer 태그 버튼 (HTML/CSS만) -->
+        <div class="producer-filter">
+            <nav class="producer-tags">
+                <a class="tag-btn" href="#all">all</a>
+                <a class="tag-btn" href="#prod-vega">vega</a>
+                <a class="tag-btn" href="#prod-uwt">uwt</a>
+                <a class="tag-btn" href="#prod-highper">highper</a>
+            </nav>
+
+            <!-- :target용 앵커 (스크롤 점프 방지용, 화면 밖 고정) -->
+            <div id="all" class="anchor"></div>
+            <div id="prod-vega" class="anchor"></div>
+            <div id="prod-uwt" class="anchor"></div>
+            <div id="prod-highper" class="anchor"></div>
+        </div>
         <!-- 카드 그리드 -->
         <div class="card-grid">
             <!-- Page<Product>는 Iterable이지만, 명확히 content에 붙이는 걸 권장 -->
-            <div class="card" th:each="p : ${paging.content}">
+            <div class="card"
+                 th:each="p : ${paging.content}"
+                 th:attr="data-producer=${p.producer != null ? #strings.toLowerCase(#strings.replace(p.producer.name,' ','-')) : 'unknown'}">
                 <div class="card-body">
 
                     <!-- 생산자 배지 -->
                     <span class="badge"
                           th:if="${p.producer != null}"
-                          th:text="${p.producer.name}">Producer</span>
+                          th:text="${p.producer.name}"
+                          th:classappend="${#strings.toLowerCase(#strings.replace(p.producer.name, ' ', '-'))}">Producer</span>
 
                     <!-- 썸네일 + 제품명 -->
                     <div class="card-header">

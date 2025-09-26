@@ -52,7 +52,15 @@
 .carousel-main .carousel-cell {
   width: 100%;
   height: 291px;
+  /*height: 500px;*/
+  overflow: hidden;
   position: relative;
+}
+.carousel-main .carousel-cell img{
+  height: 100%;
+  width: auto;          /* 비율 유지 */
+  display: block;
+  margin:0 auto;
 }
 .carousel-main .carousel-cell:before { /* 필요 없으면 제거 가능 */
   content: '';

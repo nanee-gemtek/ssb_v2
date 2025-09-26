@@ -31,7 +31,7 @@ public class ProductUserController {
 
     @GetMapping("/list")
     public String list(@RequestParam(value = "cat", required = false) Long categoryId,
-                       @PageableDefault(size = 12, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+                       @PageableDefault(size = 30, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
                        Model model) {
 
         SidebarData side = categoryService.getSidebarData();

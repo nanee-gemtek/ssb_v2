@@ -2,6 +2,7 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding-top:20px;
 }
 
 
@@ -229,11 +230,42 @@ aside.categories-menu {
           width: 40px;
           text-align: center;
           color: var(--color-black-100);
+          border-bottom-right-radius: 5px; /* 값은 취향껏 */
  }
  .badge.basic {
      background-color: #dae2e7;
  }
+ .badge.uwt {background-color: #00659f; color:#fff;}
+ .badge.vega {background-color: #f3b601;}
+ .badge.highper {background-color: #000;color:#fff;width:60px;}
 
 
 
 
+/* 버튼 스타일 */
+.producer-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.tag-btn{display:inline-block;padding:6px 12px;border:1px solid #ddd;border-radius:999px;
+         font-size:14px;text-decoration:none;color:#333}
+.tag-btn.active, .producer-filter .tag-btn[aria-current="true"]{background:#111;color:#fff;border-color:#111}
+
+/* :target용 앵커를 화면 밖으로 */
+.producer-filter .anchor{position:fixed;top:-100vh;left:0;width:0;height:0;overflow:hidden}
+
+/* 기본(해시 없음/all): 모두 보임 + all 버튼 강조 */
+.card-grid .card{display:block}
+.producer-filter:not(:has(:target)) ~ .card-grid .card{display:block}
+.producer-filter:has(#all:target) ~ .card-grid .card{display:block}
+.producer-filter:not(:has(:target)) .tag-btn[href="#all"],
+.producer-filter:has(#all:target) .tag-btn[href="#all"]{background:#21293c;color:#fff;border-color:#21293c}
+
+/* vega 필터 */
+.producer-filter:has(#prod-vega:target) ~ .card-grid .card:not([data-producer="vega"]){display:none}
+.producer-filter:has(#prod-vega:target) .tag-btn[href="#prod-vega"]{background:#f3b601;color:#000;border-color:#f3b601}
+
+/* uwt 필터 */
+.producer-filter:has(#prod-uwt:target) ~ .card-grid .card:not([data-producer="uwt"]){display:none}
+.producer-filter:has(#prod-uwt:target) .tag-btn[href="#prod-uwt"]{background:#00659f;color:#fff;border-color:#00659f}
+
+/* highper 필터 (공백→대시로 슬러그 맞춤) */
+.producer-filter:has(#prod-highper:target) ~ .card-grid .card:not([data-producer="highper"]){display:none}
+.producer-filter:has(#prod-highper:target) .tag-btn[href="#prod-highper"]{background:#000;color:#fff;border-color:#000}
