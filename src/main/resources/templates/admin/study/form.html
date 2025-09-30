@@ -1,0 +1,151 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/layout}">
+<div layout:fragment="content" class="container py-4">
+
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h5 class="my-0" th:text="${isEdit} ? 'Case Study 수정' : 'Case Study 등록'">Case Study 등록</h5>
+    </div>
+
+    <!-- 동적 action: 등록/수정 분기 -->
+    <form id="studyForm"
+          th:action="${isEdit} ? @{/admin/study/update/{id}(id=${studyDTO.id})}
+                             : @{/admin/study/create}"
+          th:object="${studyDTO}"
+          method="post" enctype="multipart/form-data">
+
+        <!-- 수정 모드일 때 id 전달(안전) -->
+        <input type="hidden" th:if="${isEdit}" th:field="*{id}"/>
+
+        <!-- 기본 정보 -->
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <span class="form-section-title">기본 정보</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-12">
+                        <label class="form-label">타이틀</label>
+                        <input type="text" th:field="*{title}" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 이미지 -->
+        <div class="card mb-4">
+            <div class="card-header bg-light d-flex align-items-center justify-content-between">
+                <span class="form-section-title">이미지</span>
+            </div>
+            <div class="card-body">
+                <div th:if="${isEdit and existingImages != null}" class="mb-3">
+                    <label class="form-label d-block mb-2">기존 이미지</label>
+                    <div class="image-grid">
+                        <div th:each="img : ${existingImages}" class="image-card">
+                            <img th:src="${img.imagePath}" alt="">
+                            <div class="image-meta">
+                                <span class="image-name" th:text="${#strings.substring(img.imagePath, img.imagePath.lastIndexOf('/')+1)}">image.jpg</span>
+                                <label class="form-check-label d-inline-flex align-items-center gap-2 mb-0">
+                                    <input class="form-check-input" type="checkbox" name="deleteImageIds" th:value="${img.id}">
+                                    <span class="small">삭제</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">이미지 업로드</label>
+                    <input type="file" name="images" id="imageUpload" multiple accept="image/*" class="form-control" />
+                    <div id="imagePreview" class="image-grid mt-3"></div>
+                    <div class="form-text">여러 장을 선택할 수 있습니다. (JPG/PNG 등)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 내용 (CKEditor) -->
+        <div class="card mb-4">
+            <div class="card-header bg-light"><span class="form-section-title">본문/설명글</span></div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">본문/설명글</label>
+                    <textarea th:field="*{description}" id="description" class="form-control"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary"
+                    th:text="${isEdit} ? '글 전체 수정' : '글 전체 등록'">글 전체 등록</button>
+<!--            <a class="btn btn-outline-secondary" th:href="@{|/admin/study/detail/${studyDTO.id}|}">취소</a>-->
+<!--            <a href="/admin/product/list" class="btn btn-secondary">목록으로</a>-->
+            <a class="btn btn-outline-secondary"
+               th:href="${isEdit} ? @{|/admin/study/detail/${studyDTO.id}|}
+            : @{/admin/study/list}">취소</a>
+
+
+        </div>
+    </form>
+
+    <!-- CKEditor + 이미지 누적 프리뷰 스크립트 (그대로 사용 가능) -->
+    <script>
+        ['description'].forEach(id=>{
+          ClassicEditor.create(document.querySelector('#'+id),{
+            toolbar:['heading','|','bold','italic','link','bulletedList','numberedList','insertTable','|','undo','redo'],
+            table:{contentToolbar:['tableColumn','tableRow','mergeTableCells']}
+          }).catch(console.error);
+        });
+
+        const imageInput = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        let fileStore = [];
+
+        function syncInputFromStore(){
+          const dt = new DataTransfer();
+          fileStore.forEach(f=>dt.items.add(f));
+          imageInput.files = dt.files;
+        }
+        function renderPreview(){
+          imagePreview.innerHTML='';
+          fileStore.forEach((file,idx)=>{
+            if(!file.type?.startsWith('image/')) return;
+            const wrap=document.createElement('div');
+            wrap.style.display='inline-flex';
+            wrap.style.flexDirection='column';
+            wrap.style.alignItems='center';
+            wrap.style.gap='6px';
+
+            const img=document.createElement('img');
+            img.style.width='180px'; img.style.height='120px'; img.style.objectFit='cover';
+            img.style.border='1px solid #ccc'; img.style.padding='4px'; img.style.background='#f8f8f8';
+
+            const name=document.createElement('div');
+            name.style.fontSize='12px'; name.style.maxWidth='180px';
+            name.style.whiteSpace='nowrap'; name.style.overflow='hidden'; name.style.textOverflow='ellipsis';
+            name.title=file.name; name.textContent=file.name;
+
+            const del=document.createElement('button');
+            del.type='button'; del.textContent='삭제'; del.className='btn btn-sm btn-outline-danger';
+            del.onclick=()=>{ fileStore.splice(idx,1); syncInputFromStore(); renderPreview(); };
+
+            const reader=new FileReader();
+            reader.onload=e=>img.src=e.target.result;
+            reader.readAsDataURL(file);
+
+            wrap.appendChild(img); wrap.appendChild(name); wrap.appendChild(del);
+            imagePreview.appendChild(wrap);
+          });
+        }
+        imageInput?.addEventListener('change', ()=>{
+          const newly=Array.from(imageInput.files);
+          newly.forEach(f=>{
+            const exists=fileStore.some(x=>x.name===f.name && x.size===f.size && x.lastModified===f.lastModified);
+            if(!exists) fileStore.push(f);
+          });
+          syncInputFromStore(); renderPreview();
+        });
+    </script>
+
+</div>
+</html>
