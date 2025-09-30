@@ -199,7 +199,7 @@
         <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary"
                     th:text="${isEdit} ? '글 전체 수정' : '글 전체 등록'">글 전체 등록</button>
-            <a href="#" class="btn btn-outline-secondary">취소</a>
+            <a class="btn btn-outline-secondary" th:href="@{|/admin/product/detail/${productDTO.id}|}">취소</a>
         </div>
     </form>
 
