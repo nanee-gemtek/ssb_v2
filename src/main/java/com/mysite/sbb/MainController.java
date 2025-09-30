@@ -3,6 +3,7 @@ package com.mysite.sbb;
 import com.mysite.sbb.category.Category;
 import com.mysite.sbb.category.CategoryService;
 import com.mysite.sbb.category.SidebarData;
+import com.mysite.sbb.product.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class MainController {
 
     private final CategoryService categoryService;
+    private final ProductService productService;
 
     @GetMapping("/sbb")
     @ResponseBody
@@ -63,7 +65,7 @@ public class MainController {
         model.addAttribute("childrenOptions", childrenOptions);
         model.addAttribute("selectedParentId", parentId);
         model.addAttribute("selectedChildId",  childId);
-
+        model.addAttribute("featured", productService.getFeatured());
         return "user/index";
 
 }

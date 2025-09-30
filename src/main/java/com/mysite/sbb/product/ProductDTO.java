@@ -30,7 +30,7 @@ public class ProductDTO {
     private String categoryParentName;
     private String categoryParentId;
     private String configLink;
-
+    private Boolean featured; // null이면 false로 처리
 
     // 🔽 [1] 사용자가 업로드한 이미지 수신용
     private List<MultipartFile> images;

@@ -368,5 +368,18 @@ public class ProductService {
         return resolved.toAbsolutePath().startsWith(base) ? resolved : null;
     }
 
+    public List<Product> getFeatured() {
+        var ids = productRepository.findFeaturedIds();
+        if (ids.isEmpty()) return List.of();
+
+        var products = productRepository.findByIdInWithAll(ids);
+
+        // ids 순서대로 정렬 보존
+        Map<Integer, Integer> order = new HashMap<>();
+        for (int i = 0; i < ids.size(); i++) order.put(ids.get(i), i);
+        products.sort(Comparator.comparingInt(p -> order.getOrDefault(p.getId(), Integer.MAX_VALUE)));
+
+        return products;
+    }
 
 }

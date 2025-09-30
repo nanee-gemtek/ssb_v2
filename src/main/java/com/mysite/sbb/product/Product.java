@@ -63,6 +63,9 @@ public class Product {
     @Column(length = 512)
     private String operatingDocPath;    // Operating instruction 문서 경로
 
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0") // MySQL이면 columnDefinition 써도 됨
+    private boolean featured; // true면 메인 노출
+
     /* 편의 메서드 (선택) */
     public boolean hasSpecDoc() {
         return specDocPath != null && !specDocPath.isBlank();

@@ -14,7 +14,10 @@
 </head>
 
 <div layout:fragment="content" class="container container_sub">
-    <p class="category_path">Products > <span th:text="${product.categoryParentName}">부모 카테고리명</span> > <span th:text="${product.categoryName}">카테고리명</span></p>
+    <p class="category_path">
+        <a th:href="@{/user/product/list}">Products</a>&nbsp; >&nbsp;
+        <a th:href="@{/user/product/list(cat=${product.categoryParentId})}" th:text="${product.categoryParentName}">부모 카테고리명</a>&nbsp; >&nbsp;
+        <a th:href="@{/user/product/list(cat=${product.categoryId})}" th:text="${product.categoryName}">카테고리명</a>
     <div class="product_title">
         <h2 class="pc_name" th:text="${product.name}">제품명</h2>
         <h3 class="pc_title" th:text="${product.title}">타이틀</h3>
@@ -100,7 +103,7 @@
             <!--/user/product/list?cat=2-->
             <a
                     class="back-link"
-                    th:href="@{/user/product/list(id=${product.categoryId})}"
+                    th:href="@{/user/product/list(cat=${product.categoryId})}"
                     aria-label="Back to ${product.categoryParentName} list"
             >
                 <span class="back-link__icon" aria-hidden="true"><<</span>

@@ -954,11 +954,13 @@
   font-family: var(--font-family-Font-2);
 }
 .industry-chemical-rdax-200x100-icon {
-  width: 100%;
+  width: auto;
+  margin:0 auto;
+  height: 100%;
   position: relative;
   max-width: var(--width-280);
   overflow: hidden;
-  height: 157.5px;
+
   flex-shrink: 0;
   object-fit: cover;
   z-index: 0;
@@ -969,30 +971,15 @@
   text-transform: uppercase;
   font-weight: var(--font-weight-600);
 }
-.background1,
-.background2 {
+
+.background1 {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   z-index: 1;
-}
-.background2 {
-  width: 31.93%;
-  margin: 0 !important;
-  position: absolute;
-  top: 16px;
-  right: 60.93%;
-  left: 7.14%;
-  border-radius: var(--br-8);
-  background-color: var(--color-grey-93);
-  align-items: center;
-  padding: var(--padding-4) 7px var(--padding-4) var(--padding-8);
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-.background1 {
-  width: 280px;
-  background-color: var(--color-grey-13);
+  width: 100%;
+  height:100%;
+  /*background-color: var(--color-grey-13);*/
   align-items: flex-start;
   position: relative;
   flex-shrink: 0;
@@ -1022,8 +1009,10 @@
   color: var(--color-white-solid);
 }
 .backgroundshadow {
-  height: 155px;
-  width: 280px;
+  /*height: 155px;
+  width: 280px;*/
+  height: 340px;
+  width: 291px;
   box-shadow: 0 4px 12px rgba(51, 51, 51, 0.16);
   border-radius: var(--br-8);
   background-color: var(--color-white-solid);
@@ -1590,6 +1579,7 @@
   overflow: hidden;
   position: relative;
   width: 100%;
+  height:350px;
   display: flex;
 }
 
@@ -1729,3 +1719,50 @@
   content: "";
   padding: 0;
 }
+
+.badge {
+     position: absolute;
+     top: 0;
+     left: 0;
+     background-color: #f3b601;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+          display: inline-block;
+          padding: 2px 0;
+          width: 40px;
+          text-align: center;
+          color: var(--color-black-100);
+          border-bottom-right-radius: 5px; /* 값은 취향껏 */
+ }
+ .badge.basic {
+     background-color: #dae2e7;
+ }
+ .badge.uwt {background-color: #00659f; color:#fff;}
+ .badge.vega {background-color: #f3b601;}
+ .badge.highper {background-color: #000;color:#fff;width:60px;}
+
+ .p_name{
+   margin-left:-50px;
+   position: absolute;
+   bottom:-30px;
+   left:50%;
+   border-radius: var(--br-8);
+   background-color: var(--color-grey-93);
+   align-items: center;
+   padding: var(--padding-4) 7px var(--padding-4) var(--padding-8);
+   box-sizing: border-box;
+   white-space: nowrap;
+   width: 100px;            /* 또는 max-width:100px */
+   white-space: nowrap;     /* 한 줄로 */
+   overflow: hidden;        /* 넘치는 부분 숨김 */
+   text-overflow: ellipsis; /* … 표시 */
+ }
+
+
+ /*롤링 수정시 중지해주기
+ .rolling-track,
+ .clone-track {
+   animation-play-state: paused !important;
+ }
+ */

@@ -6,3 +6,91 @@ textarea {
 input[type=submit] {
     margin-top:10px;
 }
+
+/*product-form*/
+.form-section-title{ font-weight:600; font-size:1.05rem; }
+.image-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1rem; }
+.image-card{ border:1px solid #e5e7eb; border-radius:.5rem; overflow:hidden; background:#fff; }
+.image-card img{ width:100%; height:120px; object-fit:cover; display:block; }
+.image-card .image-meta{ padding:.5rem .75rem; display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+.image-name{ font-size:.8125rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:120px; }
+.ck-editor__editable{ min-height:220px; } /* 에디터 기본 높이 */
+
+
+.spec_table{
+    border: 1px solid #eee;
+    width: 100%;
+    border-radius: 12px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-top:30px;
+}
+
+/* ========== Technical Specifications Table ========== */
+.spec_table table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif;
+  font-size: 15px;
+  color: #111827;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* 헤더 */
+.spec_table table thead th{
+  text-align: left;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 700;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* 셀 기본 */
+.spec_table table tbody td{
+  vertical-align: top;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* 좌측(항목명) 컬럼 */
+.spec_table table tbody td:first-child{
+  width: 280px;
+  font-weight: 700;
+  color: #374151;
+  background: #ffffff;
+}
+
+/* 전체 행 줄무늬 배경 */
+.spec_table table tbody tr:nth-child(odd) td{
+  background: #fafafa;
+}
+
+/* 우측 컬럼 안의 리스트 스타일 */
+.spec_table table tbody td ul{
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style: disc;
+}
+.spec_table table tbody td li{
+  line-height: 1.6;
+  margin: 2px 0;
+}
+
+/* 단위/링크 강조 */
+.spec_table table tbody td a{
+  text-decoration: none;
+  border-bottom: 1px dotted #3b82f6;
+   color: #2563eb;
+   font-weight: 600;
+ }
+.spec_table table tbody td a:hover{
+border-bottom-style: solid;
+}

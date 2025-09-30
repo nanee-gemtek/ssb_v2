@@ -46,6 +46,7 @@ public class ProductMapperImpl implements ProductMapper {
         productDTO.approval( product.getApproval() );
         productDTO.displayControl( product.getDisplayControl() );
         productDTO.createDate( product.getCreateDate() );
+        productDTO.featured( product.isFeatured() );
         productDTO.specDocPath( product.getSpecDocPath() );
         productDTO.operatingDocPath( product.getOperatingDocPath() );
 
@@ -76,6 +77,9 @@ public class ProductMapperImpl implements ProductMapper {
         product.images( multipartFileListToProductImageList( dto.getImages() ) );
         product.specDocPath( dto.getSpecDocPath() );
         product.operatingDocPath( dto.getOperatingDocPath() );
+        if ( dto.getFeatured() != null ) {
+            product.featured( dto.getFeatured() );
+        }
         product.configLink( dto.getConfigLink() );
 
         return product.build();

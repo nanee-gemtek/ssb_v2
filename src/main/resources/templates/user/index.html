@@ -279,141 +279,41 @@
                 <section class="container19">
                   <div class="rolling-wrapper">
                     <div class="rolling-track" id="rollingTrack">
-                      <div class="backgroundshadow">
-                        <div class="background1">
-                          <img
-                            class="industry-chemical-rdax-200x100-icon"
-                            alt=""
-                            src="/images/industry-chemical-rdax-200x100jpg@2x.png"
-                          />
+                      <!-- ▼ 여기만 반복 -->
+                      <a class="backgroundshadow"
+                         th:each="p : ${featured}"
+                         th:href="@{|/user/product/detail/${p.id}|}"
+                         th:title="${p.name}">
 
-                          <div class="background2">
-                            <div class="d-animation">3D Animation</div>
-                          </div>
+                        <div class="background1">
+                          <!-- 썸네일: 없으면 플레이스홀더 -->
+                          <img class="industry-chemical-rdax-200x100-icon"
+                               th:src="${(p.images != null and !#lists.isEmpty(p.images))
+                        ? p.images[0].imagePath
+                        : '/images/product-placeholder.jpg'}"
+                               th:alt="${p.name}" loading="lazy" />
+
+                          <!-- 기존 오버레이 그대로 사용 -->
+                          <span class="badge"
+                                th:if="${p.producer != null}"
+                                th:text="${p.producer.name}"
+                                th:classappend="${#strings.toLowerCase(#strings.replace(p.producer.name, ' ', '-'))}">Producer</span>
+                          <div class="background2 p_name" th:text="${p.name}">Product Name</div>
                         </div>
-                        <div class="frame-div">
+
+                        <!-- 캡션(이름/부제목/카테고리 등 원하는 대로)
+                        <div class="link-wrapper">
                           <div class="link14">
                             <div class="chemical-industry">
-                              <p class="industry-40-requires">Chemical</p>
-                              <p class="industry-40-requires">industry</p>
+                              <p th:text="${p.name}">Product Name</p>
+                              <p th:text="${p.producer.name}">producer Name</p>
+                              <p th:text="${p.subtitle != null ? p.subtitle : (p.category != null ? p.category.name : '')}">Subtitle</p>
                             </div>
                           </div>
-                        </div>
-                      </div>
-                      <div class="backgroundshadow">
-                        <div class="background1">
-                          <img
-                            class="industry-chemical-rdax-200x100-icon"
-                            alt=""
-                            src="/images/industry-food-rdax-200x100jpg@2x.png"
-                          />
+                        </div> -->
 
-                          <div class="background2">
-                            <div class="d-animation">3D Animation</div>
-                          </div>
-                        </div>
-                        <div class="link-wrapper1">
-                          <div class="link15">
-                            <div class="chemical-industry">Food industry</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="backgroundshadow">
-                        <div class="background1">
-                          <img
-                            class="industry-chemical-rdax-200x100-icon"
-                            alt=""
-                            src="/images/industry-pharmaceutical-rdax-200x100jpg@2x.png"
-                          />
-
-                          <div class="background2">
-                            <div class="d-animation">3D Animation</div>
-                          </div>
-                        </div>
-                        <div class="link-wrapper2">
-                          <div class="link14">
-                            <div class="chemical-industry">
-                              <p class="industry-40-requires">Pharmaceutical</p>
-                              <p class="industry-40-requires">industry</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="backgroundshadow">
-                        <div class="background1">
-                          <img
-                            class="industry-chemical-rdax-200x100-icon"
-                            alt=""
-                            src="/images/industry-wastewater-rdax-200x100jpg@2x.png"
-                          />
-
-                          <div class="background2">
-                            <div class="d-animation">3D Animation</div>
-                          </div>
-                        </div>
-                        <div class="link-wrapper2">
-                          <div class="link14">
-                            <div class="chemical-industry">
-                              <p class="industry-40-requires">Water and</p>
-                              <p class="industry-40-requires">wastewater</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="backgroundshadow">
-                        <div class="background1">
-                          <img
-                            class="industry-chemical-rdax-200x100-icon"
-                            alt=""
-                            src="/images/industry-aquaculture-rdax-200x100jpg@2x.png"
-                          />
-
-                          <div class="background2">
-                            <div class="d-animation">3D Animation</div>
-                          </div>
-                        </div>
-                        <div class="link-wrapper4">
-                          <div class="link15">
-                            <div class="chemical-industry">Aquaculture</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="backgroundshadow">
-                        <div class="background1">
-                          <img
-                                  class="industry-chemical-rdax-200x100-icon"
-                                  alt=""
-                                  src="/images/industry-aquaculture-rdax-200x100jpg@2x.png"
-                          />
-
-                          <div class="background2">
-                            <div class="d-animation">3D Animation</div>
-                          </div>
-                        </div>
-                        <div class="link-wrapper4">
-                          <div class="link15">
-                            <div class="chemical-industry">Aquaculture</div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="backgroundshadow">
-                        <div class="background1">
-                          <img
-                                  class="industry-chemical-rdax-200x100-icon"
-                                  alt=""
-                                  src="/images/industry-aquaculture-rdax-200x100jpg@2x.png"
-                          />
-
-                          <div class="background2">
-                            <div class="d-animation">3D Animation</div>
-                          </div>
-                        </div>
-                        <div class="link-wrapper4">
-                          <div class="link15">
-                            <div class="chemical-industry">Aquaculture</div>
-                          </div>
-                        </div>
-                      </div>
+                      </a>
+                      <!-- ▲ 반복 끝 -->
                     </div>
                   </div>
                 </section>
@@ -425,112 +325,7 @@
                   </div>
                 </div>
               </div>
-              <!-- 기존 section3 -->
-              <!--<div class="section3">
-                <section class="container22">
-                  <div class="article4">
-                    <div class="heading-1">
-                      <h1 class="solutions-for-a">
-                        <p class="industry-40-requires">
-                          Innovative measurement technology
-                        </p>
-                        <p class="industry-40-requires">from VEGA</p>
-                      </h1>
-                    </div>
-                    <div class="container23">
-                      <div class="as-a-sensor-container">
-                        <span class="industry-40-requires-container1">
-                          <p class="industry-40-requires">
-                            As a sensor and measuring instrument manufacturer
-                            based in Schiltach in the Black
-                          </p>
-                          <p class="industry-40-requires">
-                            Forest, VEGA has been developing innovative
-                            measurement technology for over 65
-                          </p>
-                        </span>
-                      </div>
-                      <div class="container-inner1">
-                        <div class="years-and-is-already-represent-parent">
-                          <div class="years-and-is">
-                            years and is already represented in over
-                          </div>
-                          <div class="link-wrapper5">
-                            <div class="strong-link">
-                              <div class="strong-80">80 countries</div>
-                            </div>
-                          </div>
-                          <div class="by-subsidiaries-and">
-                            by subsidiaries and sales
-                          </div>
-                        </div>
-                      </div>
-                      <div class="partners-our-goal-is-to-devel-wrapper">
-                        <div class="partners-our-goal-container">
-                          <span class="industry-40-requires-container1">
-                            <p class="industry-40-requires">
-                              partners. Our goal is to develop measurement
-                              technology that is easy to use and
-                            </p>
-                            <p class="industry-40-requires">
-                              offers maximum safety and reliability.
-                            </p>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-                <section class="container24">
-                  <div class="backgroundshadow5">
-                    <img
-                      class="container-icon"
-                      alt=""
-                      src="/images/container@2x.png"
-                    />
 
-                    <div class="container25">
-                      <div class="heading-3">
-                        <div class="the-radar-level">
-                          The radar level sensor: THE 6X®
-                        </div>
-                      </div>
-                      <div class="linkmargin1">
-                        <div class="link21">
-                          <div class="pro-vegapuls-6x">Pro: VEGAPULS 6X</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="backgroundshadow5">
-                    <img
-                      class="all-landingpage-teaser-vegapul-icon"
-                      alt=""
-                      src="/images/alllandingpageteaservegapulsc11png@2x.png"
-                    />
-
-                    <div class="container26">
-                      <div class="heading-31">
-                        <div class="compact-level-sensors-container">
-                          <span class="industry-40-requires-container1">
-                            <p class="industry-40-requires">
-                              Compact level sensors | Radar is
-                            </p>
-                            <p class="industry-40-requires">
-                              the better ultrasonic
-                            </p>
-                          </span>
-                        </div>
-                      </div>
-                      <div class="linkmargin2">
-                        <div class="link22">
-                          <div class="basic-vegapuls">Basic: VEGAPULS</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </div>-->
               <div class="section-contact">
                 <div class="section-title">
                   <h1>CONTACT</h1>
