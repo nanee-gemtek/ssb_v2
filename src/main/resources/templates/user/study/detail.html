@@ -1,0 +1,59 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/layout}">
+
+<head>
+    <th:block layout:fragment="head-extra">
+        <!-- Flickity CSS -->
+        <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+        <!-- JS (defer OK; flickity-sync는 flickity 이후에) -->
+        <script defer src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+        <script defer src="https://unpkg.com/flickity-sync@2.0.0/flickity-sync.js"></script>
+        <link rel="stylesheet" th:href="@{/css/user/study_detail.css}">
+    </th:block>
+</head>
+
+<div layout:fragment="content" class="container container_sub">
+    <div class="study_title">
+        <h3 class="pc_title" th:text="${study.title}">타이틀</h3>
+        <p class="study_meta">
+            <span th:text="${study.username}">작성자</span>
+            ·
+            <span th:text="${#temporals.format(study.createDate, 'yyyy-MM-dd HH:mm')}">2025-09-30 14:56</span>
+        </p>
+    </div>
+    <section class="study_images">
+        <!-- 이미지가 없으면 플레이스홀더 1장 -->
+        <div th:if="${#lists.isEmpty(study.imagePaths)}">
+            <img class="product-image"
+                 th:src="@{/images/product-placeholder.jpg}"
+                 th:alt="${study.title}"
+                 loading="lazy" />
+        </div>
+
+        <!-- 이미지가 하나 이상이면 전부 출력 -->
+        <div th:if="${!#lists.isEmpty(study.imagePaths)}">
+            <img class="product-image"
+                 th:each="img, iter : ${study.imagePaths}"
+                 th:src="${img}"
+                 th:alt="${study.title} + ' - ' + (${iter.index} + 1)"
+                 loading="lazy" />
+        </div>
+    </section>
+    <div class="study_content">
+        <div th:utext="${study.description}"></div>
+    </div>
+
+    <div class="btn_back">
+        <!--/user/study/list?cat=2-->
+        <a
+                class="back-link"
+                th:href="@{/user/study/list}"
+                aria-label="Back to list"
+        >
+            Back to list
+        </a>
+    </div>
+
+</div>
+</html>

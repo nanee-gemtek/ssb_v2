@@ -32,7 +32,6 @@ public class Study {
     private SiteUser author;               // 작성자
 
     @OneToMany(mappedBy = "study", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
     private List<StudyImage> images = new ArrayList<>();
 
     @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
