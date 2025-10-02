@@ -1,0 +1,77 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/layout}">
+<div layout:fragment="content" class="container my-3">
+    <form th:action="@{/admin/support/delete}" method="post" id="deleteForm">
+    <table class="table">
+        <thead class="table-dark text-center">
+        <tr>
+            <th>
+                <!-- 전체 선택 -->
+                <input type="checkbox" id="checkAll"/>
+            </th>
+            <th>번호</th>
+            <th style="width:50%">문의내용</th>
+            <th>성함</th>
+            <th>작성일시</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="text-center" th:each="support, loop : ${paging}">
+            <td>
+                <input type="checkbox" name="supportIds" th:value="${support.id}" class="row-check"/>
+            </td>
+            <td th:text="${paging.totalElements - (paging.number * paging.size) - loop.index}"></td>
+            <td class="text-start">
+                <a th:href="@{|/admin/support/detail/${support.id}|}">
+                    [[${support.messagePreview}]]
+                </a>
+            </td>
+            <td><span th:if="${support.name != null}" th:text="${support.name}"></span></td>
+            <td th:text="${#temporals.format(support.createDate, 'yyyy-MM-dd HH:mm')}"></td>
+
+        </tr>
+        </tbody>
+    </table>
+
+
+    <!-- 페이징 처리 -->
+    <div th:if="${!paging.empty}">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number}|}">
+                    <span>이전</span>
+                </a>
+            </li>
+            <li th:each="page : ${#numbers.sequence(0, paging.totalPages - 1)}"
+                th:if="${page >= paging.number - 5 and page <= paging.number + 5}"
+                th:classappend="${page == paging.number} ? 'active'"
+                class="page-item">
+                <a class="page-link" th:href="@{|?page=${page + 1}|}" th:text="${page + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number + 2}|}">
+                    <span>다음</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="mt-3 d-flex justify-content-between">
+        <a th:href="@{create}" class="btn btn-primary">case support 등록하기</a>
+        <button type="submit" class="btn btn-danger">선택 삭제</button>
+    </div>
+    </form>
+</div>
+<!-- 체크박스 전체선택 스크립트 -->
+<script th:inline="javascript">
+    console.log("here");
+    const checkAll = document.getElementById("checkAll");
+    const checkboxes = document.querySelectorAll(".row-check");
+
+    checkAll?.addEventListener("change", (e) => {
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
+    });
+</script>
+</html>
