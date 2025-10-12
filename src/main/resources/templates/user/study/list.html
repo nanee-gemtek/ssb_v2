@@ -4,13 +4,14 @@
 
 <head>
     <th:block layout:fragment="head-extra">
+        <link rel="stylesheet" th:href="@{/css/user/sub.css}">
         <link rel="stylesheet" th:href="@{/css/user/pagination.css}">
-        <link rel="stylesheet" th:href="@{/css/user/product_list.css}">
+        <link rel="stylesheet" th:href="@{/css/user/study_list.css}">
     </th:block>
 </head>
 
 
-<div layout:fragment="content" class="container product_list">
+<div layout:fragment="content" class="container study_list">
 
     <div class="wrap_list">
 
@@ -23,35 +24,35 @@
                     <!-- 썸네일 + 제품명 -->
                     <div class="card-header">
                         <!-- 이미지 있는 경우 -->
-<!--                        <img class="product-thumb"-->
+<!--                        <img class="study-thumb"-->
 <!--                             th:src="${#lists.isEmpty(p.imagePaths) ? @{/img/no-image.png} : p.imagePaths[0]}"-->
 <!--                             alt="thumbnail"/>-->
 
                         <!-- 없는 경우 플레이스홀더-->
-<!--                        <img class="product-thumb"-->
+<!--                        <img class="study-thumb"-->
 <!--                             th:unless="${p.imagePath.length==0}"-->
 <!--                             th:src="@{'/images/product-placeholder.jpg'}"-->
 <!--                             alt="thumbnail"/>-->
 
-<!--                        <img class="product-thumb"-->
+<!--                        <img class="study-thumb"-->
 <!--                           th:src="${p.imagePaths[0]}"/>-->
 
 
                         <!-- 리스트가 비었을 때: 플레이스홀더 -->
-                        <img class="product-thumb"
+                        <img class="study-thumb"
                              th:if="${#lists.isEmpty(p.imagePaths)}"
                              th:src="@{/images/product-placeholder.jpg}"
                              alt="thumbnail"/>
 
                         <!-- 리스트가 있을 때: 첫 번째 이미지 -->
-                        <img class="product-thumb"
+                        <img class="study-thumb"
                              th:if="${!#lists.isEmpty(p.imagePaths)}"
                              th:src="${p.imagePaths[0]}"
                              alt="thumbnail"/>
 
                         <div class="card-title">
 
-                            <a class="product-link"
+                            <a class="study-link"
                                th:href="@{|/user/study/detail/${p.id}|}"
                                th:text="${p.title}"></a>
                             <a class="btn" th:href="@{|/user/study/detail/${p.id}|}">Show Case</a>

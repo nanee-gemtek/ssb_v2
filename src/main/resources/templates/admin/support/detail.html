@@ -18,15 +18,40 @@
     <!-- 문서 -->
     <div class="card mb-4">
         <div class="card-header bg-light fw-semibold">문서</div>
-        <div class="card-body d-flex flex-wrap gap-2">
-            <a th:if="${support.attachmentPath != null and !#strings.isEmpty(support.attachmentPath)}"
-               th:href="${support.attachmentPath}" target="_blank"
-               class="btn btn-sm btn-outline-secondary">
-                첨부파일
+<!--        <div class="card-body d-flex flex-wrap gap-2">-->
+<!--            <a th:if="${support.attachmentPath != null and !#strings.isEmpty(support.attachmentPath)}"-->
+<!--               th:href="${support.attachmentPath}" target="_blank"-->
+<!--               class="btn btn-sm btn-outline-secondary">-->
+<!--                첨부파일-->
+<!--            </a>-->
+
+<!--            <span class="text-body-secondary small"-->
+<!--                  th:if="${support.attachmentPath == null}">등록된 문서가 없습니다.</span>-->
+<!--        </div>-->
+        <div th:if="${support.attachmentPath != null and !#strings.isEmpty(support.attachmentPath)}" class="d-flex gap-2 align-items-center">
+            <!-- 미리보기(새 탭) -->
+            <a th:href="${support.attachmentPath}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                미리보기
+            </a>
+            <!-- 다운로드: 원본 파일명으로 저장 -->
+            <a th:href="${support.attachmentPath}"
+               th:attr="download=${support.attachmentOriginal}"
+               th:text="${support.attachmentOriginal != null && !#strings.isEmpty(support.attachmentOriginal) ? support.attachmentOriginal : '다운로드'}"
+               class="btn btn-sm btn-primary">
+                다운로드
             </a>
 
-            <span class="text-body-secondary small"
-                  th:if="${support.attachmentPath == null}">등록된 문서가 없습니다.</span>
+            <!-- 파일 정보: (크기) -->
+            <span class="text-muted"
+                  th:with="
+          size=${support.attachmentSize},
+          kb=${size != null ? size / 1024.0 : 0},
+          mb=${kb / 1024.0},
+          pretty=${size == null ? '0 KB' : (size >= 1048576 ? #numbers.formatDecimal(mb,1,1) + ' MB' : #numbers.formatDecimal(kb,1,1) + ' KB')}
+        "
+                  th:text="${'(' + pretty + ')'}">
+    (123.4 KB)
+  </span>
         </div>
     </div>
 

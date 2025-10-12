@@ -1,0 +1,100 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{user/layout/layout}">
+
+<head>
+    <th:block layout:fragment="head-extra">
+        <link rel="stylesheet" th:href="@{/css/user/sub.css}">
+        <link rel="stylesheet" th:href="@{/css/user/support.css}">
+    </th:block>
+</head>
+
+
+
+<div layout:fragment="content" class="container py-4 width_sub_visual">
+    <div class="sub_visual">
+        <div class="picture">
+            <img
+                    loading="lazy"
+                    alt=""
+                    src="https://www.vega.com/-/media/images/landingpages/industry/a2041-c0-00-header-wastewater-1410x400px.jpg"
+            />
+
+            <div class="gradient"></div>
+            <div class="gradient1"></div>
+        </div>
+        <h1 class="title">Support</h1>
+    </div>
+
+    <div class="support-form">
+        <form id="supportForm"
+                  th:action="@{/user/support/create}"
+                  th:object="${supportDTO}"
+                  method="post" enctype="multipart/form-data">
+            <table>
+                <tr>
+                    <th class="required">회사명</th>
+                    <td><input name="companyName" type="text" placeholder="회사명을 입력해주세요."/></td>
+                </tr>
+                <tr>
+                    <th class="required">성함</th>
+                    <td><input name="name"  type="text" placeholder="성함을 입력해주세요."/></td>
+                </tr>
+                <tr>
+                    <th class="required">전화번호</th>
+                    <td><input name="phone" type="text" placeholder="예: 010-1234-5678"/></td>
+                </tr>
+                <tr>
+                    <th class="required">E-mail</th>
+                    <td><input name="email" type="email" placeholder="example@email.com"/></td>
+                </tr>
+                <tr>
+                    <th>전달 메세지<br>(요구사항)</th>
+                    <td>
+                        <textarea name="message" placeholder="※ 문의사항을 자유롭게 기입해주세요."></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th>파일첨부<br>(레이아웃 또는 도면 등)</th>
+                    <td>
+                        <input type="file" name="attachment" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                    </td>
+                </tr>
+            </table>
+
+            <div class="privacy">
+                <input type="checkbox" id="privacyConsent" name="privacyConsent" value="true" />
+                <label for="privacyConsent"> 개인정보 수집 및 이용에 동의합니다.</label>
+                <button type="button" class="privacy-btn" onclick="openPrivacyModal()">[취급방침 보기]</button>
+            </div>
+            <div class="note">※ <span style="color:#d00;">*</span> 는 필수입력 항목입니다.</div>
+
+            <div class="btn-area">
+                <button type="submit" class="btn-submit">문의 등록</button>
+            </div>
+        </form>
+        <!-- 모달 -->
+        <div id="privacyModal" class="modal">
+            <div class="modal-content">
+                <h3>개인정보 수집 및 이용에 대한 안내</h3>
+                <p>
+                    1. 수집항목: 이름, 연락처, 이메일<br>
+                    2. 이용목적: 고객 문의 응대 및 서비스 제공<br>
+                    3. 보유기간: 문의 접수 후 3년간 보관 후 파기<br>
+                    4. 제3자 제공: 없음
+                </p>
+                <button class="close-btn" onclick="closePrivacyModal()">닫기</button>
+            </div>
+        </div>
+
+        <script>
+            function openPrivacyModal() {
+              document.getElementById('privacyModal').style.display = 'block';
+            }
+            function closePrivacyModal() {
+              document.getElementById('privacyModal').style.display = 'none';
+            }
+        </script>
+    </div>
+</div>
+</html>

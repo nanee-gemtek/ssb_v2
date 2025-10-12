@@ -12,12 +12,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -91,4 +97,67 @@ public class SupportService {
         return resolved.toAbsolutePath().startsWith(base) ? resolved : null;
     }
 
+
+    @Transactional
+    public Integer create(SupportDTO dto) {
+
+
+        Support support = Support.builder()
+                .name(dto.getName())
+                .companyName(dto.getCompanyName())
+                .phone(dto.getPhone())
+                .email(dto.getEmail())
+                .message(dto.getMessage())
+                .privacyConsent(dto.isPrivacyConsent())
+                .createDate(LocalDateTime.now())
+                .build();
+
+        // 문서 저장 (있을 때만)
+        if (dto.getAttachment() != null && !dto.getAttachment().isEmpty()) {
+            MultipartFile file = dto.getAttachment();
+            String path = saveDoc(file);
+            support.setAttachmentPath(path);
+
+            // 파일 크기 및 원본 파일명 저장
+            support.setAttachmentSize(file.getSize());
+            support.setAttachmentOriginal(file.getOriginalFilename());
+        }
+
+        Support saved = supportRepository.save(support);
+        return saved.getId(); // Integer
+    }
+
+
+    /* ------- 문서 저장 유틸 ------- */
+
+    private void ensureDocsDir() {
+        File dir = new File(uploadSupportDir);
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Failed to create docs directory: " + uploadSupportDir);
+        }
+    }
+
+    private String saveDoc(MultipartFile file) {
+        if (file == null || file.isEmpty()) return null;
+
+        // (선택) MIME/확장자 검증
+        // String ct = file.getContentType(); // application/pdf, ...
+        // 허용 확장자: pdf/doc/docx 등 정책에 맞춰 검사 가능
+
+        ensureDocsDir();
+        String original = Optional.ofNullable(file.getOriginalFilename()).orElse("file");
+        String ext = "";
+        int pos = original.lastIndexOf('.');
+        if (pos >= 0) ext = original.substring(pos);
+        String saveName = UUID.randomUUID() + ext;
+
+        Path savePath = Paths.get(uploadSupportDir).resolve(saveName);
+        try {
+            file.transferTo(savePath.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException("문서 저장 실패: " + original, e);
+        }
+        // 브라우저에서 접근할 URL 경로 반환
+        return "/uploadSupportDocs/" + saveName;
+    }
 }

@@ -28,8 +28,8 @@ public class SupportMapperImpl implements SupportMapper {
         supportDTO.message( support.getMessage() );
         supportDTO.privacyConsent( support.isPrivacyConsent() );
         supportDTO.attachmentPath( support.getAttachmentPath() );
-        supportDTO.attachmentOriginal( support.getAttachmentOriginal() );
         supportDTO.attachmentSize( support.getAttachmentSize() );
+        supportDTO.attachmentOriginal( support.getAttachmentOriginal() );
         supportDTO.createDate( support.getCreateDate() );
 
         return supportDTO.build();
@@ -51,8 +51,8 @@ public class SupportMapperImpl implements SupportMapper {
         support.message( dto.getMessage() );
         support.privacyConsent( dto.isPrivacyConsent() );
         support.attachmentPath( dto.getAttachmentPath() );
-        support.attachmentOriginal( dto.getAttachmentOriginal() );
         support.attachmentSize( dto.getAttachmentSize() );
+        support.attachmentOriginal( dto.getAttachmentOriginal() );
         support.createDate( dto.getCreateDate() );
 
         return support.build();

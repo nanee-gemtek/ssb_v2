@@ -1,0 +1,139 @@
+body {
+            font-family: "Pretendard", "Noto Sans KR", sans-serif;
+            background-color: #fff;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .support-form {
+            width: 100%;
+            margin: 60px auto;
+            border-top: 2px solid #000;
+            position:relative;
+        }
+
+        .support-form table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .support-form th,
+        .support-form td {
+            border-bottom: 1px solid #e3e3e3;
+            padding: 12px 10px;
+            vertical-align: middle;
+        }
+
+        .support-form th {
+            width: 180px;
+            background-color: #fafafa;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .support-form td input[type="text"],
+        .support-form td input[type="email"],
+        .support-form td input[type="tel"],
+        .support-form td textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .support-form td textarea {
+            height: 160px;
+            resize: none;
+        }
+
+        .support-form input[type="file"] {
+            margin-top: 8px;
+        }
+
+        .support-form .required::after {
+            content: " *";
+            color: #d00;
+            font-weight: bold;
+        }
+
+        .note {
+            position:absolute;
+            bottom:67px;
+            right:0;
+            text-align: right;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .privacy {
+            margin: 20px 0;
+            text-align: left;
+            font-size: 13px;
+        }
+        .privacy input{
+            vertical-align:middle;
+        }
+
+
+        .btn-area {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-submit {
+            background: #2b5cff;
+            color: #fff;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .btn-submit:hover {
+            background: #1c47d4;
+        }
+
+        .file-info {
+            font-size: 13px;
+            color: #666;
+            margin-left: 8px;
+        }
+
+/*취급방침 모달*/
+        .modal {
+          display: none;
+          position: fixed;
+          top: 0; left: 0; right: 0; bottom: 0;
+          background: rgba(0,0,0,0.5);
+          z-index: 999;
+        }
+        .modal-content {
+          background: #fff;
+          width: 90%;
+          max-width: 500px;
+          margin: 100px auto;
+          padding: 20px;
+          border-radius: 8px;
+          line-height: 1.6;
+        }
+        .privacy-btn {
+          margin-left: 8px;
+          font-size: 13px;
+          color: #2b5cff;
+          background: none;
+          border: none;
+          cursor: pointer;
+          text-decoration: underline;
+        }
+        .close-btn {
+          margin-top: 15px;
+          background: #2b5cff;
+          color: #fff;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+        }

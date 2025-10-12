@@ -1,6 +1,7 @@
 package com.mysite.sbb.support;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -20,9 +21,12 @@ public class SupportDTO {
     private String messagePreview; // 리스트용 미리보기(서버에서 자름)
     private boolean privacyConsent;
 
-    private String attachmentPath;
-    private String attachmentOriginal;
+    // 문서 업로드(단일 파일)
+    private MultipartFile attachment;
+    // 저장된 문서 경로(URL)
+    private String attachmentPath; // 예: /uploadDocs/abcd.pdf
     private Long attachmentSize;
+    private String attachmentOriginal;
 
     private LocalDateTime createDate;
 

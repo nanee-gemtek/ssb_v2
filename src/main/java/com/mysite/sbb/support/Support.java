@@ -40,9 +40,10 @@ public class Support {
     // 첨부(단일)
     @Column(length = 512)
     private String attachmentPath;
-    @Column(length = 255)
-    private String attachmentOriginal;
     private Long attachmentSize;
+
+    @Column(length = 512)
+    private String attachmentOriginal;
 
     // 메타
     private LocalDateTime createDate;

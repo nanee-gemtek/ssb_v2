@@ -1443,7 +1443,6 @@
   margin:0 auto;
   max-width: 100%;
   flex-direction: column;
-  padding: 0 var(--padding-15);
   box-sizing: border-box;
   /*max-width: var(--width-1440);*/
   max-width: 1410px;
@@ -1647,8 +1646,8 @@
     content: "|";
     padding:0 10px;
 }
-.section-title h1{
-	margin:0;
+.section-contact-info h1{
+	margin-bottom:78px;
 	position:relative;
 	font-size:30px;
 	letter-spacing: .15em;
@@ -1657,7 +1656,7 @@
 	font-family: 'Noto Sans KR'
 }
 
-.section-title h1:after{
+.section-contact-info h1:after{
 	position:absolute;
 	content:" ";
 	top:5%;
@@ -1667,33 +1666,19 @@
 	background:#3F8EFC;
 }
 
-.contact_form form {
-  width: 100%;
-}
-.contact_form input,
-.contact_form textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
-  box-sizing: border-box;
-}
-.contact_form textarea {
-  height: 120px;
-}
-.contact_form #btn_submit {
+.section-contact-info #btn_submit {
   border: 1px solid #3F8EFC;
   background-color:#5098FC;
+  width:500px;
+  margin-top:30px;
 }
-.contact_form #btn_submit:hover {
+.section-contact-info #btn_submit:hover {
   border: 1px solid #21293C;
   -webkit-transition: ease all 0.5s;
   transition: ease all 0.5s;
 }
 
-.contact_form #btn_submit a {
+.section-contact-info #btn_submit a {
   background-color: rgba(255, 255, 255, 0.2); /* 불투명한 흰색 배경 */
   color: #fff;
   display: block;
@@ -1705,16 +1690,13 @@
   text-decoration:none;
 }
 
-.contact_form #btn_submit a:hover {
+.section-contact-info #btn_submit a:hover {
   color: #898989;
   -webkit-transition: ease all 0.5s;
   transition: ease all 0.5s;
 }
 
-.contact_form input::placeholder,
-.contact_form textarea::placeholder {
-  color: #696969;
-}
+
 .section-contact-info span.inner_span:before {
   content: "";
   padding: 0;
