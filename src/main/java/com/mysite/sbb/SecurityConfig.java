@@ -21,6 +21,9 @@ public class SecurityConfig {
     @Bean //스프링 시큐리티의 세부성정은 @Bean 애너테이션을 통해 SecurityFilterChain 빈을 생성하여 설정
     SecurityFilterChain filterChanin(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.ignoringRequestMatchers(
+                        new AntPathRequestMatcher("/user/support/create-ajax")
+                ))
                 .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
                 //formLogin 메서드는 스프링 시큐리티의 로그인 설정을 담당하는 부분

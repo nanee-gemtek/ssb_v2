@@ -137,3 +137,8 @@ body {
           padding: 8px 16px;
           border-radius: 4px;
         }
+
+        input.is-invalid, textarea.is-invalid {
+          border-color: #e54848 !important;
+          background: #fff7f7;
+        }

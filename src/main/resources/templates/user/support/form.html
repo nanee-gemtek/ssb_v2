@@ -27,10 +27,11 @@
     </div>
 
     <div class="support-form">
+        <!--                  th:action="@{/user/support/create}"
+                          th:object="${supportDTO}"-->
         <form id="supportForm"
-                  th:action="@{/user/support/create}"
-                  th:object="${supportDTO}"
-                  method="post" enctype="multipart/form-data">
+              th:attr="data-ajax-action=@{/user/support/create-ajax}"
+              method="post" enctype="multipart/form-data">
             <table>
                 <tr>
                     <th class="required">회사명</th>
@@ -55,7 +56,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>파일첨부<br>(레이아웃 또는 도면 등)</th>
+                    <th>파일첨부<br>최대 용량(10MB)</th>
                     <td>
                         <input type="file" name="attachment" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
                     </td>
@@ -94,7 +95,105 @@
             function closePrivacyModal() {
               document.getElementById('privacyModal').style.display = 'none';
             }
+        // === 파일 용량/형식 설정 ===
+        const ALLOWED_TYPES = [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ];
+        // 확장자 예비 체크(브라우저가 type을 비워둘 때 대비)
+        const hasAllowedExt = (name = "") => /\.(pdf|docx?|)$/i.test(name);
+
+        // 최대 용량(10MB) — 필요시 숫자만 바꾸세요
+        const MAX_MB = 10;
+        const MAX_BYTES = MAX_MB * 1024 * 1024;
+
+        // 사람이 읽기 쉬운 사이즈 문자열
+        const readable = (bytes) =>
+          bytes >= 1048576 ? (bytes / 1048576).toFixed(1) + " MB" : (bytes / 1024).toFixed(1) + " KB";
+
+
+
+        // 파일 인풋 즉시 검증 (선택 순간 피드백)
+        const fileInput = document.querySelector('input[name="attachment"]');
+        if (fileInput) {
+          fileInput.addEventListener("change", () => {
+            const f = fileInput.files && fileInput.files[0];
+            if (!f) return;
+
+            // 용량 체크
+            if (f.size > MAX_BYTES) {
+              alert(`첨부파일은 최대 ${MAX_MB}MB까지 업로드 가능합니다.\n현재 파일: ${readable(f.size)}`);
+              fileInput.value = ""; // 선택 초기화
+              return;
+            }
+
+            // 형식 체크 (MIME or 확장자)
+            if (!(ALLOWED_TYPES.includes(f.type) || hasAllowedExt(f.name))) {
+              alert("첨부파일 형식은 PDF/DOC/DOCX만 가능합니다.");
+              fileInput.value = "";
+              return;
+            }
+          });
+        }
+
+        // 간단 검증 (원하시면 기존 상세검증 유지)
+        const isBlank = v => !v || v.trim() === "";
+
+        document.getElementById("supportForm").addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const form = e.currentTarget;
+          const privacy = form.querySelector('#privacyConsent');
+
+          // 최소 필수값만 예시
+          const companyName = form.companyName.value;
+          const name        = form.name.value;
+          const phone       = form.phone.value;
+          const email       = form.email.value;
+
+          const errors = [];
+          if (isBlank(companyName)) errors.push("회사명을 입력해주세요.");
+          if (isBlank(name))        errors.push("성함을 입력해주세요.");
+          if (isBlank(phone))       errors.push("전화번호를 입력해주세요.");
+          if (isBlank(email))       errors.push("이메일을 입력해주세요.");
+          if (!privacy.checked)     errors.push("개인정보 수집 및 이용에 동의해주세요.");
+          if (errors.length) { alert(errors.join("\n")); return; }
+
+          // FormData 생성
+          const fd = new FormData(form);
+          // 체크박스 미체크 시 전송 누락되는 것 방지
+          fd.set("privacyConsent", privacy.checked ? "true" : "false");
+
+          try {
+            const url = form.getAttribute("data-ajax-action") || "/user/support/create-ajax";
+            const res = await fetch(url, {
+              method: "POST",
+              // CSRF/쿠키 미사용 버전: headers 최소화
+              headers: { "Accept": "application/json" },
+              body: fd
+            });
+
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json(); // { success, id, message }
+
+            if (data.success) {
+              alert((data.message || "문의가 접수되었습니다."));
+              form.reset();
+            } else {
+              alert(data.message || "등록에 실패했습니다.");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("오류가 발생했습니다. 관리자에게 문의해주세요.");
+          }
+        });
         </script>
     </div>
+
 </div>
+
+
+
+
 </html>
