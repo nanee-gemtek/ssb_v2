@@ -14,9 +14,22 @@
     </th:block>
 </head>
 
-<div layout:fragment="content" class="container container_sub">
+<div layout:fragment="content" class="container width_sub_visual">
+    <div class="sub_visual">
+        <div class="picture">
+            <img
+                    loading="lazy"
+                    alt=""
+                    src="https://www.vega.com/-/media/images/landingpages/industry/a2041-c0-00-header-wastewater-1410x400px.jpg"
+            />
+
+            <div class="gradient"></div>
+            <div class="gradient1"></div>
+        </div>
+        <h1 class="title">Case Study</h1>
+    </div>
     <div class="study_title">
-        <h3 class="pc_title" th:text="${study.title}">타이틀</h3>
+        <h3 class="st_title" th:text="${study.title}">타이틀</h3>
         <p class="study_meta">
             <span th:text="${study.username}">작성자</span>
             ·
@@ -34,7 +47,7 @@
 
         <!-- 이미지가 하나 이상이면 전부 출력 -->
         <div th:if="${!#lists.isEmpty(study.imagePaths)}">
-            <img class="product-image"
+            <img class="study-image"
                  th:each="img, iter : ${study.imagePaths}"
                  th:src="${img}"
                  th:alt="${study.title} + ' - ' + (${iter.index} + 1)"

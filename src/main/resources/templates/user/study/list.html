@@ -11,56 +11,45 @@
 </head>
 
 
-<div layout:fragment="content" class="container study_list">
+<div layout:fragment="content" class="container study_list width_sub_visual">
+    <div class="sub_visual">
+        <div class="picture">
+            <img
+                    loading="lazy"
+                    alt=""
+                    src="https://www.vega.com/-/media/images/landingpages/industry/a2041-c0-00-header-wastewater-1410x400px.jpg"
+            />
 
+            <div class="gradient"></div>
+            <div class="gradient1"></div>
+        </div>
+        <h1 class="title">Case Study</h1>
+    </div>
     <div class="wrap_list">
-
         <!-- 카드 그리드 -->
         <div class="card-grid">
-            <div class="card"
-                 th:each="p : ${paging.content}">
-                <div class="card-body">
+            <div class="card" th:each="p : ${paging.content}">
+                <!-- 썸네일 + 제품명 -->
+                <!-- 리스트가 비었을 때: 플레이스홀더 -->
+                <img class="study-thumb"
+                     th:if="${#lists.isEmpty(p.imagePaths)}"
+                     th:src="@{/images/product-placeholder.jpg}"
+                     alt="thumbnail"/>
 
-                    <!-- 썸네일 + 제품명 -->
-                    <div class="card-header">
-                        <!-- 이미지 있는 경우 -->
-<!--                        <img class="study-thumb"-->
-<!--                             th:src="${#lists.isEmpty(p.imagePaths) ? @{/img/no-image.png} : p.imagePaths[0]}"-->
-<!--                             alt="thumbnail"/>-->
+                <!-- 리스트가 있을 때: 첫 번째 이미지 -->
+                <img class="study-thumb"
+                     th:if="${!#lists.isEmpty(p.imagePaths)}"
+                     th:src="${p.imagePaths[0]}"
+                     alt="thumbnail"/>
 
-                        <!-- 없는 경우 플레이스홀더-->
-<!--                        <img class="study-thumb"-->
-<!--                             th:unless="${p.imagePath.length==0}"-->
-<!--                             th:src="@{'/images/product-placeholder.jpg'}"-->
-<!--                             alt="thumbnail"/>-->
-
-<!--                        <img class="study-thumb"-->
-<!--                           th:src="${p.imagePaths[0]}"/>-->
-
-
-                        <!-- 리스트가 비었을 때: 플레이스홀더 -->
-                        <img class="study-thumb"
-                             th:if="${#lists.isEmpty(p.imagePaths)}"
-                             th:src="@{/images/product-placeholder.jpg}"
-                             alt="thumbnail"/>
-
-                        <!-- 리스트가 있을 때: 첫 번째 이미지 -->
-                        <img class="study-thumb"
-                             th:if="${!#lists.isEmpty(p.imagePaths)}"
-                             th:src="${p.imagePaths[0]}"
-                             alt="thumbnail"/>
-
-                        <div class="card-title">
-
-                            <a class="study-link"
-                               th:href="@{|/user/study/detail/${p.id}|}"
-                               th:text="${p.title}"></a>
-                            <a class="btn" th:href="@{|/user/study/detail/${p.id}|}">Show Case</a>
-                        </div>
-                    </div>
+                <div class="card-title">
+                    <a class="study-link"
+                       th:href="@{|/user/study/detail/${p.id}|}"
+                       th:text="${p.title}"></a>
 
                 </div>
             </div>
+
         </div>
 
 
