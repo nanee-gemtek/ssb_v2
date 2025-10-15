@@ -13,9 +13,16 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> findAll(Pageable pageable);
 
+    Page<Product> findAllByOrderByCreateDateDesc(Pageable pageable);
+
 
     @EntityGraph(attributePaths = "category")
     Page<Product> findByCategoryIdIn(Collection<Long> categoryIds, Pageable pageable);
+
+
+    @EntityGraph(attributePaths = "category")
+    Page<Product> findByCategoryIdInOrderByCreateDateDesc(Collection<Long> categoryIds, Pageable pageable);
+
 
     @Query("select distinct p from Product p left join fetch p.images where p.id in :ids")
     List<Product> findAllWithImagesByIdIn(@Param("ids") List<Integer> ids);

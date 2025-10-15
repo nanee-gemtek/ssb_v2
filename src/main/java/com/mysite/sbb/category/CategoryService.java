@@ -39,14 +39,16 @@ public class CategoryService {
     public Page<Product> getProductsByCategory(Long categoryId, Pageable pageable) {
         if (categoryId == null) {
             // 카테고리 지정 안 됨 → 전체 조회
-            return productRepository.findAll(pageable);
+            //return productRepository.findAll(pageable);
+            return productRepository.findAllByOrderByCreateDateDesc(pageable);
         }
 
         // 부모 + 모든 하위 카테고리 id 수집
         List<Long> allIds = collectDescendantIdsBFS(categoryId);
 
         // 해당 id들의 제품을 한 번에 조회
-        return productRepository.findByCategoryIdIn(allIds, pageable);
+        //return productRepository.findByCategoryIdIn(allIds, pageable);
+        return productRepository.findByCategoryIdInOrderByCreateDateDesc(allIds, pageable);
     }
 
     /**
