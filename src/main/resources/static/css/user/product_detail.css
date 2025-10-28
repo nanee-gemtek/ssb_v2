@@ -311,3 +311,5 @@ border-bottom-style: solid;
 .btn_back .back-link:hover .back-link__icon{
   transform: translateX(-4px);
 }
+
+.btn.is-disabled { pointer-events: none; opacity: 0.5; }

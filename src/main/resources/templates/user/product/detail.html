@@ -55,36 +55,56 @@
 
         <div class="pc_right">
             <div class="pc_description">
-            <!-- 적용 분야 -->
-                <h5>Application area</h5>
-                <div th:utext="${product.applicationArea}"></div>
+                <!-- 적용 분야 -->
+                <div th:if="${!#strings.isEmpty(#strings.trim(product.applicationArea))}">
+                    <h5>Application area</h5>
+                    <div th:utext="${product.applicationArea}"></div>
+                </div>
 
                 <!-- 장점 -->
-                <h5 class="mt-4">Your benefit</h5>
-                <div th:utext="${product.advantages}"></div>
+                <div class="mt-4" th:if="${!#strings.isEmpty(#strings.trim(product.advantages))}">
+                    <h5>Your benefit</h5>
+                    <div th:utext="${product.advantages}"></div>
+                </div>
             </div>
         </div>
     </div>
     <div class="product_content2">
         <div class="doc-actions card">
             <h5>Specification sheet</h5>
-            <!-- 사양서 -->
-            <a th:if="${product.specDocPath != null and !#strings.isEmpty(product.specDocPath)}"
-               th:href="@{${product.specDocPath}}"
-               th:attr="download=${product.name + '-사양서.pdf'}"
-               class="btn btn_download">
+            <a class="btn btn_download"
+               th:with="hasSpec=${product.specDocPath != null and !#strings.isEmpty(product.specDocPath)}"
+               th:href="${hasSpec} ? @{${product.specDocPath}} : null"
+               th:attr="
+       download=${hasSpec} ? ${product.name + '-사양서.pdf'} : null,
+       aria-disabled=${!hasSpec},
+       tabindex=${!hasSpec} ? -1 : null
+     "
+               th:classappend="${!hasSpec} ? ' is-disabled' : ''">
                 Download
             </a>
 
             <h5>Operating instructions</h5>
-            <!-- 사용설명서 -->
-            <a th:if="${product.operatingDocPath != null and !#strings.isEmpty(product.operatingDocPath)}"
-               th:href="@{${product.operatingDocPath}}"
-               th:attr="download=${product.name + '-사용설명서.pdf'}"
-               class="btn btn_download">
+            <a class="btn btn_download"
+               th:with="hasOp=${product.operatingDocPath != null and !#strings.isEmpty(product.operatingDocPath)}"
+               th:href="${hasOp} ? @{${product.operatingDocPath}} : null"
+               th:attr="
+       download=${hasOp} ? ${product.name + '-사용설명서.pdf'} : null,
+       aria-disabled=${!hasOp},
+       tabindex=${!hasOp} ? -1 : null
+     "
+               th:classappend="${!hasOp} ? ' is-disabled' : ''">
                 Download
             </a>
         </div>
+
+        <!-- 카달로그 이미지 갤러리 -->
+        <div class="spec_table" th:if="${product.catalogImagePaths != null and !#lists.isEmpty(product.catalogImagePaths)}">
+            <div th:each="imgPath : ${product.catalogImagePaths}" class="image-card">
+                <img th:src="@{${imgPath}}" alt="카달로그 이미지">
+            </div>
+        </div>
+
         <!-- 기술사양 -->
         <div class="spec_table" th:if="${product.specifications != null and !#strings.isEmpty(product.specifications)}">
             <div th:utext="${product.specifications}"></div>

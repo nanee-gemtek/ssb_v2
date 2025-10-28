@@ -53,8 +53,13 @@ public class Product {
     @ManyToOne
     private Producer producer; // 제조사
 
+    @Builder.Default
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductImage> images = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CatalogImage> catalogImages = new ArrayList<>();
 
     /* ----- 문서 경로 추가 ----- */
     @Column(length = 512)

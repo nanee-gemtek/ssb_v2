@@ -51,6 +51,7 @@ public class ProductMapperImpl implements ProductMapper {
         productDTO.operatingDocPath( product.getOperatingDocPath() );
 
         productDTO.imagePaths( mapImagePaths(product) );
+        productDTO.catalogImagePaths( mapCatalogImagePaths(product) );
 
         return productDTO.build();
     }
@@ -75,6 +76,7 @@ public class ProductMapperImpl implements ProductMapper {
         product.displayControl( dto.getDisplayControl() );
         product.createDate( dto.getCreateDate() );
         product.images( multipartFileListToProductImageList( dto.getImages() ) );
+        product.catalogImages( multipartFileListToCatalogImageList( dto.getCatalogImages() ) );
         product.specDocPath( dto.getSpecDocPath() );
         product.operatingDocPath( dto.getOperatingDocPath() );
         if ( dto.getFeatured() != null ) {
@@ -230,6 +232,29 @@ public class ProductMapperImpl implements ProductMapper {
         List<ProductImage> list1 = new ArrayList<ProductImage>( list.size() );
         for ( MultipartFile multipartFile : list ) {
             list1.add( multipartFileToProductImage( multipartFile ) );
+        }
+
+        return list1;
+    }
+
+    protected CatalogImage multipartFileToCatalogImage(MultipartFile multipartFile) {
+        if ( multipartFile == null ) {
+            return null;
+        }
+
+        CatalogImage.CatalogImageBuilder catalogImage = CatalogImage.builder();
+
+        return catalogImage.build();
+    }
+
+    protected List<CatalogImage> multipartFileListToCatalogImageList(List<MultipartFile> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<CatalogImage> list1 = new ArrayList<CatalogImage>( list.size() );
+        for ( MultipartFile multipartFile : list ) {
+            list1.add( multipartFileToCatalogImage( multipartFile ) );
         }
 
         return list1;

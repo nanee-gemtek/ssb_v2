@@ -41,7 +41,9 @@ public class ProductAdminController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/create")
     public String createForm(Model model) {
-        model.addAttribute("productDTO", new ProductDTO());
+        ProductDTO dto = new ProductDTO();
+        dto.setFeatured(Boolean.FALSE); // null 방지
+        model.addAttribute("productDTO", dto);
         model.addAttribute("topCategories", categoryService.getRootCategories());
         model.addAttribute("producers", producerService.all());
         model.addAttribute("isEdit", false);
@@ -52,11 +54,14 @@ public class ProductAdminController {
     @PostMapping("/create")
     public String create(@ModelAttribute ProductDTO dto,
                          @RequestParam(value = "images", required = false) List<MultipartFile> images,
+                         @RequestParam(value = "catalogImages", required = false) List<MultipartFile> catalogImages,
                          @RequestParam(value = "specDoc", required = false) MultipartFile specDoc,
                          @RequestParam(value = "operatingDoc", required = false) MultipartFile operatingDoc,
                          Principal principal) {
+        if (dto.getFeatured() == null) dto.setFeatured(false);
         dto.setUsername(principal.getName());
         dto.setImages(images);           // 이미지
+        dto.setCatalogImages(catalogImages); //카달로그 이미지
         dto.setSpecDoc(specDoc);         // 사양서
         dto.setOperatingDoc(operatingDoc); // 사용설명서
         Integer newId = productService.create(dto); // create가 id 반환하도록 서비스 수정
@@ -73,6 +78,7 @@ public class ProductAdminController {
         model.addAttribute("topCategories", categoryService.getRootCategories());
         model.addAttribute("producers", producerService.all());
         model.addAttribute("existingImages", productService.findImagesByProductId(id));
+        model.addAttribute("existingCatalogImages", productService.findCatalogImagesByProductId(id));
         model.addAttribute("isEdit", true);
         return "admin/product/form";
     }
@@ -83,6 +89,8 @@ public class ProductAdminController {
                          @ModelAttribute ProductDTO dto,
                          @RequestParam(value = "images", required = false) List<MultipartFile> images,
                          @RequestParam(value = "deleteImageIds", required = false) List<Long> deleteImageIds,
+                         @RequestParam(value = "catalogImages", required = false) List<MultipartFile> catalogImages,
+                         @RequestParam(value = "deleteCatalogImageIds", required = false) List<Long> deleteCatalogImageIds,
                          @RequestParam(value = "specDoc", required = false) MultipartFile specDoc,
                          @RequestParam(value = "operatingDoc", required = false) MultipartFile operatingDoc,
                          @RequestParam(value = "deleteSpecDoc", defaultValue = "false") boolean deleteSpecDoc,
@@ -91,10 +99,12 @@ public class ProductAdminController {
         dto.setId(id);
         dto.setUsername(principal.getName());
         dto.setImages(images);
+        dto.setCatalogImages(catalogImages);
         dto.setSpecDoc(specDoc);
         dto.setOperatingDoc(operatingDoc);
         // 서비스 시그니처: update(dto, deleteImageIds, deleteSpecDoc, deleteOperatingDoc)
-        productService.update(dto, deleteImageIds, deleteSpecDoc, deleteOperatingDoc);
+        //productService.update(dto, deleteImageIds,deleteCatalogImageIds, deleteSpecDoc, deleteOperatingDoc);
+        productService.update(dto, deleteImageIds, deleteCatalogImageIds,deleteSpecDoc, deleteOperatingDoc);
         return "redirect:/admin/product/detail/" + id;
     }
 

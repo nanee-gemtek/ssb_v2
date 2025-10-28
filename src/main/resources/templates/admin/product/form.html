@@ -41,6 +41,15 @@
                         <label class="form-label">제품구성 링크</label>
                         <input type="text" name="configLink" th:value="${productDTO.configLink}" class="form-control" placeholder="https://..." />
                     </div>
+                    <div class="col-md-6">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               th:field="*{featured}">
+                        <label class="form-check-label" for="featured">
+                            메인 노출
+                        </label>
+                        <small class="text-muted ms-2">체크 시 메인 페이지에 노출</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -76,13 +85,10 @@
                 </div>
             </div>
         </div>
-        <!-- 이미지 -->
+        <!-- 제품 이미지 -->
         <div class="card mb-4">
             <div class="card-header bg-light d-flex align-items-center justify-content-between">
                 <span class="form-section-title">이미지</span>
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="alert('이미지 미리보기 완료!')">
-                    이미지 미리보기 완료
-                </button>
             </div>
             <div class="card-body">
                 <div th:if="${isEdit and existingImages != null}" class="mb-3">
@@ -109,6 +115,44 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- 카달로그 이미지 -->
+        <div class="card mb-4">
+            <div class="card-header bg-light align-items-center">
+                <span class="form-section-title">카달로그 이미지</span>
+                <span  style="font-size:11px; color:rgb(63, 142, 252);;margin:0;">하이퍼 제품 경우 상세정보를 카달로그 이미지로 대신한다.</span >
+            </div>
+            <div class="card-body">
+                <!-- 기존: existingImages 를 참조하던 부분을 existingCatalogImages 로 분리 -->
+                <div th:if="${isEdit and existingCatalogImages != null}" class="mb-3">
+                    <label class="form-label d-block mb-2">기존 카달로그 이미지</label>
+                    <div class="image-grid">
+                        <div th:each="img : ${existingCatalogImages}" class="image-card">
+                            <!-- 엔티티/DTO 속성이 catalogImagePath 라면 th:src 를 그에 맞게 변경 -->
+                            <img th:src="${img.imagePath}" alt="">
+                            <div class="image-meta">
+            <span class="image-name"
+                  th:text="${#strings.substring(img.imagePath, img.imagePath.lastIndexOf('/')+1)}">image.jpg</span>
+                                <label class="form-check-label d-inline-flex align-items-center gap-2 mb-0">
+                                    <!-- 체크박스 name 도 제품 이미지와 구분 -->
+                                    <input class="form-check-input" type="checkbox" name="deleteCatalogImageIds" th:value="${img.id}">
+                                    <span class="small">삭제</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">카달로그 이미지 업로드</label>
+                    <input type="file" name="catalogImages" id="catalogImageUpload" multiple accept="image/*" class="form-control" />
+                    <div id="catalogImagePreview" class="image-grid mt-3"></div>
+                    <div class="form-text">여러 장을 선택할 수 있습니다. (JPG/PNG 등)</div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- 기존 문서 업로드 -->
         <div class="card mb-4">
@@ -148,27 +192,6 @@
         </div>
 
 
-
-        <!-- 수정 모드일 때 기존 문서 표시 + 삭제 체크
-        <div th:if="${isEdit}">
-            <div th:if="${productDTO.specDocPath}">
-                현재 사양서: <a th:href="${productDTO.specDocPath}" target="_blank">다운로드</a>
-                <label style="margin-left:8px;">
-                    <input type="checkbox" name="deleteSpecDoc"> 삭제
-                </label>
-            </div>
-            <div th:if="${productDTO.operatingDocPath}" style="margin-top:6px;">
-                현재 사용설명서: <a th:href="${productDTO.operatingDocPath}" target="_blank">다운로드</a>
-                <label style="margin-left:8px;">
-                    <input type="checkbox" name="deleteOperatingDoc"> 삭제
-                </label>
-            </div>
-            <br/>
-        </div>
-        -->
-
-
-
         <!-- 내용 (CKEditor) -->
         <div class="card mb-4">
             <div class="card-header bg-light"><span class="form-section-title">내용</span></div>
@@ -205,6 +228,7 @@
 
     <!-- CKEditor + 이미지 누적 프리뷰 스크립트 (그대로 사용 가능) -->
     <script>
+        // ===== CKEditor 초기화 =====
         ['applicationArea','advantages','specifications','approval','displayControl'].forEach(id=>{
           ClassicEditor.create(document.querySelector('#'+id),{
             toolbar:['heading','|','bold','italic','link','bulletedList','numberedList','insertTable','|','undo','redo'],
@@ -212,55 +236,105 @@
           }).catch(console.error);
         });
 
-        const imageInput = document.getElementById('imageUpload');
-        const imagePreview = document.getElementById('imagePreview');
-        let fileStore = [];
+        // ===== 공통: 파일 미리보기(누적/삭제 지원) 유틸 =====
+        /**
+         * 여러 input에 대해 동일한 누적 미리보기 동작을 적용
+         * @param {string} inputId - <input type="file" id="...">
+         * @param {string} previewId - 미리보기 컨테이너 id
+         */
+        function setupFilePreview(inputId, previewId) {
+          const inputEl = document.getElementById(inputId);
+          const previewEl = document.getElementById(previewId);
 
-        function syncInputFromStore(){
-          const dt = new DataTransfer();
-          fileStore.forEach(f=>dt.items.add(f));
-          imageInput.files = dt.files;
-        }
-        function renderPreview(){
-          imagePreview.innerHTML='';
-          fileStore.forEach((file,idx)=>{
-            if(!file.type?.startsWith('image/')) return;
-            const wrap=document.createElement('div');
-            wrap.style.display='inline-flex';
-            wrap.style.flexDirection='column';
-            wrap.style.alignItems='center';
-            wrap.style.gap='6px';
+          if (!inputEl || !previewEl) return;
 
-            const img=document.createElement('img');
-            img.style.width='180px'; img.style.height='120px'; img.style.objectFit='cover';
-            img.style.border='1px solid #ccc'; img.style.padding='4px'; img.style.background='#f8f8f8';
+          /** @type {File[]} */
+          let store = [];
 
-            const name=document.createElement('div');
-            name.style.fontSize='12px'; name.style.maxWidth='180px';
-            name.style.whiteSpace='nowrap'; name.style.overflow='hidden'; name.style.textOverflow='ellipsis';
-            name.title=file.name; name.textContent=file.name;
+          function syncInputFromStore(){
+            const dt = new DataTransfer();
+            store.forEach(f => dt.items.add(f));
+            inputEl.files = dt.files;
+          }
 
-            const del=document.createElement('button');
-            del.type='button'; del.textContent='삭제'; del.className='btn btn-sm btn-outline-danger';
-            del.onclick=()=>{ fileStore.splice(idx,1); syncInputFromStore(); renderPreview(); };
+          function renderPreview(){
+            previewEl.innerHTML = '';
+            store.forEach((file, idx) => {
+              if (!file.type?.startsWith('image/')) return;
 
-            const reader=new FileReader();
-            reader.onload=e=>img.src=e.target.result;
-            reader.readAsDataURL(file);
+              const card = document.createElement('div');
+              card.style.display = 'inline-flex';
+              card.style.flexDirection = 'column';
+              card.style.alignItems = 'center';
+              card.style.gap = '6px';
+              card.style.marginRight = '8px';
+              card.style.marginBottom = '8px';
 
-            wrap.appendChild(img); wrap.appendChild(name); wrap.appendChild(del);
-            imagePreview.appendChild(wrap);
+              const img = document.createElement('img');
+              img.style.width = '180px';
+              img.style.height = '120px';
+              img.style.objectFit = 'cover';
+              img.style.border = '1px solid #ccc';
+              img.style.padding = '4px';
+              img.style.background = '#f8f8f8';
+              img.alt = file.name;
+
+              const name = document.createElement('div');
+              name.style.fontSize = '12px';
+              name.style.maxWidth = '180px';
+              name.style.whiteSpace = 'nowrap';
+              name.style.overflow = 'hidden';
+              name.style.textOverflow = 'ellipsis';
+              name.title = file.name;
+              name.textContent = file.name;
+
+              const del = document.createElement('button');
+              del.type = 'button';
+              del.textContent = '삭제';
+              del.className = 'btn btn-sm btn-outline-danger';
+              del.onclick = () => {
+                store.splice(idx, 1);
+                syncInputFromStore();
+                renderPreview();
+              };
+
+              const reader = new FileReader();
+              reader.onload = e => img.src = e.target.result;
+              reader.readAsDataURL(file);
+
+              card.appendChild(img);
+              card.appendChild(name);
+              card.appendChild(del);
+              previewEl.appendChild(card);
+            });
+          }
+
+          // 기존 파일 + 새로 선택한 파일을 "중복 없이" 누적
+          inputEl.addEventListener('change', () => {
+            const newly = Array.from(inputEl.files);
+            newly.forEach(f => {
+              const exists = store.some(x => x.name === f.name && x.size === f.size && x.lastModified === f.lastModified);
+              if (!exists) store.push(f);
+            });
+            syncInputFromStore();
+            renderPreview();
           });
+
+          // 외부에서 필요하다면 스토어 제어용 핸들러를 반환할 수도 있음
+          return {
+            getFiles: () => store.slice(),
+            clear: () => { store = []; syncInputFromStore(); renderPreview(); }
+          };
         }
-        imageInput?.addEventListener('change', ()=>{
-          const newly=Array.from(imageInput.files);
-          newly.forEach(f=>{
-            const exists=fileStore.some(x=>x.name===f.name && x.size===f.size && x.lastModified===f.lastModified);
-            if(!exists) fileStore.push(f);
-          });
-          syncInputFromStore(); renderPreview();
-        });
+
+        // ====== 적용: 일반 이미지 & 카달로그 이미지 ======
+        // 일반 이미지(이미 사용 중이던 프리뷰를 공통 유틸로 교체)
+        setupFilePreview('imageUpload', 'imagePreview');
+
+        // 카달로그 이미지(새로 연결)
+        setupFilePreview('catalogImageUpload', 'catalogImagePreview');
     </script>
+
 
 </div>
 </html>

@@ -9,6 +9,8 @@
                 <ul class="list-unstyled d-flex flex-wrap gap-3 small text-body-secondary mb-0">
                     <li><span class="fw-semibold">회사명</span> <span th:text="${support.companyName}">companyName</span></li>
                     <li><span class="fw-semibold">작성자</span> <span th:text="${support.name}">name</span></li>
+                    <li><span class="fw-semibold">연락처</span> <span th:text="${support.phone}">phone</span></li>
+                    <li><span class="fw-semibold">이메일</span> <span th:text="${support.email}">email</span></li>
                     <li><span class="fw-semibold">작성일시</span> <span th:text="${#temporals.format(support.createDate, 'yyyy-MM-dd HH:mm')}">2025-09-30 10:00</span></li>
                 </ul>
             </div>

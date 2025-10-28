@@ -10,6 +10,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Value("${file.upload-dir}")
     private String uploadDir;
+
+    @Value("${file.catalog-dir}")
+    private String catalogDir; // 카달로그 이미지 저장 루트
     @Value("${file.docs-dir}") // 문서 저장 루트 (예: /var/www/uploadDocs)
     private String docsDir;
 
@@ -25,6 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
         // /images/** 요청을 uploadDir 실제 경로로 매핑
         registry.addResourceHandler("/uploadImages/**")
                 .addResourceLocations("file:///" + uploadDir + "/"); // 실제 경로
+        registry.addResourceHandler("/catalogImages/**")
+                .addResourceLocations("file:///" + catalogDir + "/"); // 실제 경로
         registry.addResourceHandler("/uploadStudyImages/**")
                 .addResourceLocations("file:///" + uploadStudyDir + "/"); // 실제 경로
         registry.addResourceHandler("/uploadDocs/**")

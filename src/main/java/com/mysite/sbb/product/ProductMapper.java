@@ -17,6 +17,8 @@ public interface ProductMapper {
     @Mapping(source = "author.username", target = "username")
     @Mapping(target = "imagePaths", expression = "java(mapImagePaths(product))") // ✅ 이 줄 추가
     @Mapping(target = "images", ignore = true) // ✅ 이 줄 추가: MultipartFile 무시
+    @Mapping(target = "catalogImagePaths", expression = "java(mapCatalogImagePaths(product))") // ✅ 이 줄 추가
+    @Mapping(target = "catalogImages", ignore = true) // ✅ 이 줄 추가: MultipartFile 무시
     @Mapping(target = "categoryName", source = "category.name")  // ✅ 카테고리명 매핑
     @Mapping(target = "categoryId", source = "category.id")  // ✅ 카테고리id 매핑
     @Mapping(target = "categoryParentName", source = "category.parent.name") // ✅ 상위 카테고리명 추가
@@ -33,6 +35,14 @@ public interface ProductMapper {
         if (product.getImages() == null) return Collections.emptyList();
         return product.getImages().stream()
                 .map(ProductImage::getImagePath)
+                .collect(Collectors.toList());
+    }
+
+
+    default List<String> mapCatalogImagePaths(Product product) {
+        if (product.getCatalogImages() == null) return Collections.emptyList();
+        return product.getCatalogImages().stream()
+                .map(CatalogImage::getImagePath)
                 .collect(Collectors.toList());
     }
 

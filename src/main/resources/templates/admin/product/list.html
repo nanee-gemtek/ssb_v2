@@ -12,6 +12,7 @@
             </th>
             <th>번호</th>
             <th style="width:50%">제품명</th>
+            <th>메인 노출</th>
             <th>카테고리 1</th>
 <!--            <th>카테고리 2</th>-->
             <th>제조사</th>
@@ -29,6 +30,9 @@
                 <a th:href="@{|/admin/product/detail/${product.id}|}">
                     [[${product.name}]]
                 </a>
+            </td>
+            <td>
+                <span th:if="${product.featured}" class="badge bg-warning text-dark">메인</span>
             </td>
             <td th:text="${product.categoryName != null ? product.categoryName : 'category'}"></td>
             <td th:text="${product.producerName}"></td>

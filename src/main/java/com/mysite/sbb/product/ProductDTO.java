@@ -37,6 +37,12 @@ public class ProductDTO {
     // 🔽 [2] 저장된 이미지 경로 표시용 (화면에 <img>로 출력할 URL들)
     private List<String> imagePaths; // ProductImage의 imagePath 값들
 
+
+    // 🔽 [1] 카달로그 이미지 수신용
+    private List<MultipartFile> catalogImages;
+    // 🔽 [2] 카달로그 이미지 경로 표시용 (화면에 <img>로 출력할 URL들)
+    private List<String> catalogImagePaths; // ProductImage의 imagePath 값들
+
     // 문서 업로드(단일 파일)
     private MultipartFile specDoc;            // 사양서
     private MultipartFile operatingDoc;       // 사용설명서

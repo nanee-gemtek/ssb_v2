@@ -37,6 +37,9 @@ public class ProductService {
     @Value("${file.upload-dir}")
     private String uploadDir; // 이미지 저장 루트
 
+    @Value("${file.catalog-dir}")
+    private String catalogDir; // 카달로그 이미지 저장 루트
+
     @Value("${file.docs-dir}") // 문서 저장 루트
     private String docsDir;
 
@@ -72,6 +75,17 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    /** 수정 폼에서 기존 카달로그 이미지 렌더용 */
+    @Transactional(readOnly = true)
+    public List<CatalogImage> findCatalogImagesByProductId(Integer productId) {
+        Product p = productRepository.findById(productId)
+                .orElseThrow(() -> new DataNotFoundException("Product not found"));
+        // 정렬된 리스트 반환 (엔티티 그대로 사용)
+        return p.getCatalogImages().stream()
+                .sorted(Comparator.comparing(img -> Optional.ofNullable(img.getSortOrder()).orElse(0)))
+                .collect(Collectors.toList());
+    }
+
     /** 등록: 생성 후 새로 생성된 id 반환 */
     @Transactional
     public Integer create(ProductDTO dto) {
@@ -96,10 +110,14 @@ public class ProductService {
                 .category(category)
                 .producer(producer)
                 .images(new ArrayList<>())
+                .featured(dto.getFeatured())
                 .build();
 
         // 새 이미지 저장
         appendImages(product, dto.getImages());
+
+        // 새 카달로그 이미지 저장
+        appendCatalogImages(product, dto.getCatalogImages());
 
         // 문서 저장 (있을 때만)
         if (dto.getSpecDoc() != null && !dto.getSpecDoc().isEmpty()) {
@@ -117,7 +135,7 @@ public class ProductService {
 
     /** 수정: 필드/연관관계 갱신 + 이미지 삭제/추가 + 정렬 */
     @Transactional
-    public void update(ProductDTO dto, List<Long> deleteImageIds,boolean deleteSpecDoc, boolean deleteOperatingDoc) {
+    public void update(ProductDTO dto, List<Long> deleteImageIds, List<Long> deleteCatalogImageIds,boolean deleteSpecDoc, boolean deleteOperatingDoc) {
         Product product = productRepository.findById(dto.getId())
                 .orElseThrow(() -> new DataNotFoundException("Product not found"));
 
@@ -131,6 +149,7 @@ public class ProductService {
         product.setApproval(dto.getApproval());
         product.setDisplayControl(dto.getDisplayControl());
         product.setConfigLink(dto.getConfigLink());
+        product.setFeatured(dto.getFeatured());
 
         // 연관 갱신
         if (dto.getProducerId() != null) {
@@ -145,6 +164,22 @@ public class ProductService {
         }
 
         // 이미지 삭제
+        if (deleteCatalogImageIds != null && !deleteCatalogImageIds.isEmpty()) {
+            // 1) 물리 파일 삭제 시도
+            for (Iterator<CatalogImage> it = product.getCatalogImages().iterator(); it.hasNext(); ) {
+                CatalogImage img = it.next();
+                if (deleteCatalogImageIds.contains(img.getId())) {
+                    deletePhysicalFileQuietly(img.getImagePath());
+                    it.remove(); // orphanRemoval=true면 이걸로 DB 삭제됨
+                }
+            }
+        }
+
+        // 새 이미지 추가
+        appendImages(product, dto.getImages());
+
+
+        // 카달로그 이미지 삭제
         if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
             // 1) 물리 파일 삭제 시도
             for (Iterator<ProductImage> it = product.getImages().iterator(); it.hasNext(); ) {
@@ -154,14 +189,11 @@ public class ProductService {
                     it.remove(); // orphanRemoval=true면 이걸로 DB 삭제됨
                 }
             }
-            // 2) orphanRemoval=false 환경 대비: 레포지토리로 직접 삭제
-//            if (productImageRepository != null) {
-//                productImageRepository.deleteAllByIdInBatch(deleteImageIds);
-//            }
         }
 
-        // 새 이미지 추가
-        appendImages(product, dto.getImages());
+        // 카달로그  새 이미지 추가
+        appendCatalogImages(product, dto.getCatalogImages());
+
 
         // sortOrder 정렬(0..n-1)
         resequenceSortOrders(product);
@@ -244,6 +276,24 @@ public class ProductService {
         // 웹에서 접근할 상대 경로 규칙에 맞춰 반환
         return "/uploadImages/" + saveName;
     }
+
+    private String saveCatalogFile(MultipartFile file) {
+        String originalFilename = Optional.ofNullable(file.getOriginalFilename()).orElse("file");
+        String ext = "";
+        int pos = originalFilename.lastIndexOf('.');
+        if (pos >= 0) ext = originalFilename.substring(pos);
+        String saveName = UUID.randomUUID().toString() + ext;
+
+        Path savePath = Paths.get(catalogDir).resolve(saveName);
+        try {
+            file.transferTo(savePath.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException("이미지 저장 실패: " + originalFilename, e);
+        }
+        // 웹에서 접근할 상대 경로 규칙에 맞춰 반환
+        return "/catalogImages/" + saveName;
+    }
+
 
     /** 물리 파일 삭제(있으면) */
     private void deletePhysicalFileQuietly(String imagePath) {
@@ -380,6 +430,30 @@ public class ProductService {
         products.sort(Comparator.comparingInt(p -> order.getOrDefault(p.getId(), Integer.MAX_VALUE)));
 
         return products;
+    }
+
+
+    /** 이미지 리스트를 product에 이어붙임 (파일 저장 포함) */
+    private void appendCatalogImages(Product product, List<MultipartFile> files) {
+        if (files == null || files.isEmpty()) return;
+
+        ensureUploadDir();
+
+        // 기존 마지막 인덱스 다음부터
+        int startIndex = product.getImages().stream()
+                .map(img -> Optional.ofNullable(img.getSortOrder()).orElse(0))
+                .max(Integer::compareTo).orElse(-1) + 1;
+
+        for (MultipartFile file : files) {
+            if (file == null || file.isEmpty()) continue;
+            String savedRelPath = saveCatalogFile(file); // "/uploadImages/xxxx.png"
+            CatalogImage image = CatalogImage.builder()
+                    .imagePath(savedRelPath)
+                    .product(product)
+                    .sortOrder(startIndex++)
+                    .build();
+            product.getCatalogImages().add(image);
+        }
     }
 
 }
