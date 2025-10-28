@@ -20,7 +20,12 @@
     }
 
 
-    .inline-edit { display: none; gap: 6px; align-items: center; }
     .inline-view { display: flex; gap: 6px; align-items: center; }
-    .inline-edit input[type="text"] { padding: 4px 6px; width: 260px; }
-    .inline-actions button { margin-left:4px; }
+     .inline-edit, .inline-edit-child { display: none; gap: 6px; align-items: center; }
+     .inline-edit input[type="text"],
+     .inline-edit-child input[type="text"] { padding: 4px 6px; width: 260px; }
+
+
+.alert { padding:8px 10px; border-radius:6px; margin-bottom:8px; white-space:pre-line; }
+.alert.success { background:#eef9f0; border:1px solid #cfe9d3; }
+.alert.error   { background:#fff4f4; border:1px solid #f1cdcd; }

@@ -116,14 +116,15 @@ public class CategoryAdminController {
     @PostMapping("/{id}")
     public String rename(@PathVariable Long id,
                          @RequestParam String name,
+                         @RequestParam(required = false) Long selectedParentId,
                          RedirectAttributes rttr) {
         try {
             categoryService.rename(id, name);
             rttr.addFlashAttribute("msgSuccess", "이름 변경 완료: #" + id + " → " + name);
-            return "redirect:/admin/categories?selected=" + id; // ✅ 수정한 부모 하이라이트 유지
+            return "redirect:/admin/categories?selected=" + selectedParentId; // ✅ 수정한 부모 하이라이트 유지
         } catch (IllegalArgumentException e) { // 중복명 등 서비스에서 던진 경우
             rttr.addFlashAttribute("msgError", "이름 변경 실패: " + e.getMessage());
-            return "redirect:/admin/categories?selected=" + id;
+            return "redirect:/admin/categories?selected=" + selectedParentId;
         }
     }
 

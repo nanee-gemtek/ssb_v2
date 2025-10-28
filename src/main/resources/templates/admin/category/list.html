@@ -13,6 +13,12 @@
 <div layout:fragment="content" class="container my-3">
 
     <h2>카테고리 관리</h2>
+    <div class="flash-area" style="margin:12px 0;">
+        <div th:if="${msgSuccess}" class="alert success" th:text="${msgSuccess}"></div>
+        <div th:if="${msgSuccessChild}" class="alert success" th:text="${msgSuccessChild}"></div>
+        <div th:if="${msgError}" class="alert error" th:text="${msgError}"></div>
+        <div th:if="${msgErrorChild}" class="alert error" th:text="${msgErrorChild}"></div>
+    </div>
     <div class="category_wrap">
         <!-- 우측: 부모 카테고리 리스트 (자식 수 표시 + 선택 삭제 버튼, CSRF 없음) -->
         <section class="panel">
@@ -28,14 +34,6 @@
                 <input type="hidden" name="parentId" value="">
                 <button type="submit">추가</button>
             </form>
-
-            <!-- 플래시 메시지 -->
-            <div th:if="${msgSuccess}"
-                 style="background:#eef9f0;border:1px solid #cfe9d3;padding:8px;border-radius:6px;margin-bottom:8px;"
-                 th:text="${msgSuccess}"></div>
-            <div th:if="${msgError}"
-                 style="white-space:pre-line;background:#fff4f4;border:1px solid #f1cdcd;padding:8px;border-radius:6px;margin-bottom:8px;"
-                 th:text="${msgError}"></div>
 
                 <table>
                     <thead>
@@ -72,6 +70,8 @@
                                   method="post"
                                   th:attr="data-id=${p.id}">
                                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <!-- ✅ 부모 수정 후에도 자기 자신을 선택 상태로 -->
+                                <input type="hidden" name="selectedParentId" th:value="${p.id}"/>
                                 <input type="text" name="name" th:value="${p.name}" maxlength="100" required>
                                 <span class="inline-actions">
                                     <button type="submit">저장</button>
@@ -186,54 +186,108 @@
             </div>
             <hr>
 
-            <!-- 플래시 메시지(자식용) -->
-            <div th:if="${msgSuccessChild}"
-                 style="background:#eef9f0;border:1px solid #cfe9d3;padding:8px;border-radius:6px;margin-bottom:8px;"
-                 th:text="${msgSuccessChild}"></div>
-            <div th:if="${msgErrorChild}"
-                 style="white-space:pre-line;background:#fff4f4;border:1px solid #f1cdcd;padding:8px;border-radius:6px;margin-bottom:8px;"
-                 th:text="${msgErrorChild}"></div>
-
-            <form th:action="@{/admin/categories/delete-children}" method="post" id="childListForm">
-                <!-- CSRF -->
+            <!-- ✅ 자식 추가 폼 -->
+            <form th:action="@{/admin/categories}" method="post"
+                  style="margin-bottom:12px; display:flex; gap:8px; align-items:center;">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-                <!-- 현재 부모 유지용 -->
+                <input type="hidden" name="parentId" th:value="${selectedId}"/>
+                <input type="text" name="name" placeholder="새 자식 카테고리 이름"
+                       required maxlength="100" style="flex:1; padding:6px 8px;">
+                <button type="submit">추가</button>
+            </form>
+
+
+            <!-- 현재 부모 유지용 -->
+            <input type="hidden" name="selectedParentId" th:value="${selectedId}"/>
+
+            <table>
+                <thead>
+                <tr>
+                    <th style="width:48px;"><input type="checkbox" onclick="toggleAllChildren(this)"></th>
+                    <th style="width:80px;">ID</th>
+                    <th>자식 이름</th>
+                    <th style="width:140px;">제품 수</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(childrenOfSelected)}">
+                    <td colspan="4" class="muted">자식 카테고리가 없습니다.</td>
+                </tr>
+                <tr th:each="ch : ${childrenOfSelected}" th:attr="data-id=${ch.id}">
+                    <td>
+                        <span class="handle" title="드래그로 순서 변경">≡</span>
+                        <input type="checkbox" name="childIds" th:value="${ch.id}" form="childDeleteForm">
+                    </td>
+                    <td th:text="${ch.id}">10</td>
+
+                    <td>
+                        <!-- 보기 모드 -->
+                        <div class="inline-view" th:attr="data-id=${ch.id}">
+                            <span th:text="${ch.name}">Child Name</span>
+                            <button type="button" class="btn-edit-child" style="font-size:12px;">수정</button>
+                        </div>
+
+                        <!-- 편집 모드 (기본 감춤) -->
+                        <form class="inline-edit-child"
+                              th:action="@{|/admin/categories/${ch.id}|}"
+                              method="post"
+                              th:attr="data-id=${ch.id}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <!-- ✅ 수정 후에도 이 부모 유지 -->
+                            <input type="hidden" name="selectedParentId" th:value="${selectedId}"/>
+                            <input type="text" name="name" th:value="${ch.name}" maxlength="100" required>
+                            <span class="inline-actions">
+                              <button type="submit">저장</button>
+                              <button type="button" class="btn-cancel-child">취소</button>
+                            </span>
+                        </form>
+                    </td>
+
+                    <td th:text="${productCountByCat[ch.id]}">0</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top:10px; display:flex; gap:8px;">
+                <button type="submit" form="childDeleteForm"
+                        onclick="return confirm('선택한 자식 카테고리를 삭제할까요?')">
+                    자식 선택 삭제
+                </button>
+            </div>
+
+            <!-- 자식 삭제 전용 폼 (바깥) -->
+            <form id="childDeleteForm" th:action="@{/admin/categories/delete-children}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                 <input type="hidden" name="selectedParentId" th:value="${selectedId}"/>
-
-                <table>
-                    <thead>
-                    <tr>
-                        <th style="width:48px;"><input type="checkbox" onclick="toggleAllChildren(this)"></th>
-                        <th style="width:80px;">ID</th>
-                        <th>자식 이름</th>
-                        <th style="width:140px;">제품 수</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:if="${#lists.isEmpty(childrenOfSelected)}">
-                        <td colspan="4" class="muted">자식 카테고리가 없습니다.</td>
-                    </tr>
-                    <tr th:each="ch : ${childrenOfSelected}">
-                        <td><input type="checkbox" name="childIds" th:value="${ch.id}"></td>
-                        <td th:text="${ch.id}">10</td>
-                        <td th:text="${ch.name}">Child Name</td>
-                        <td th:text="${productCountByCat[ch.id]}">0</td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <div style="margin-top:10px; display:flex; gap:8px;">
-                    <button type="submit" onclick="return confirm('선택한 자식 카테고리를 삭제할까요?')">
-                        자식 선택 삭제
-                    </button>
-                </div>
             </form>
         </section>
 
         <script>
-            function toggleAllChildren(master){
-              document.querySelectorAll('input[name="childIds"]').forEach(cb => cb.checked = master.checked);
-            }
+            // 보기 → 편집
+            document.querySelectorAll('.btn-edit-child').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const view = e.target.closest('.inline-view');
+                const id = view.getAttribute('data-id');
+                const edit = view.parentElement.querySelector('.inline-edit-child[data-id="'+id+'"]');
+                view.style.display = 'none';
+                edit.style.display = 'flex';
+                const input = edit.querySelector('input[name="name"]');
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length);
+              });
+            });
+
+            // 취소 → 보기
+            document.querySelectorAll('.inline-edit-child .btn-cancel-child').forEach(btn => {
+              btn.addEventListener('click', (e) => {
+                const edit = e.target.closest('.inline-edit-child');
+                const id = edit.getAttribute('data-id');
+                const view = edit.parentElement.querySelector('.inline-view[data-id="'+id+'"]');
+                edit.style.display = 'none';
+                view.style.display = 'flex';
+              });
+            });
+
         </script>
 
     </div>
