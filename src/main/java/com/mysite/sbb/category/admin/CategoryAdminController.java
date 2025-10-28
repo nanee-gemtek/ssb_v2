@@ -128,11 +128,10 @@ public class CategoryAdminController {
         }
     }
 
-    /** 형제 재정렬 (AJAX JSON) */
     @PostMapping("/{parentId}/children/reorder")
     @ResponseBody
-    public ResponseEntity<?> reorder(@PathVariable(required = false) Long parentId,
-                                     @RequestBody OrderRequest req) {
+    public ResponseEntity<?> reorderChildren(@PathVariable Long parentId,
+                                             @RequestBody OrderRequest req) {
         categoryService.reorderSiblings(parentId, req.getOrderedIds());
         return ResponseEntity.ok().build();
     }

@@ -209,7 +209,7 @@
                     <th style="width:140px;">제품 수</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="childTbody" th:attr="data-parent-id=${selectedId}">
                 <tr th:if="${#lists.isEmpty(childrenOfSelected)}">
                     <td colspan="4" class="muted">자식 카테고리가 없습니다.</td>
                 </tr>
@@ -287,6 +287,42 @@
                 view.style.display = 'flex';
               });
             });
+
+
+             // 자식 테이블 드래그 정렬
+  const childTbody = document.getElementById('childTbody');
+  if (childTbody) {
+    const parentId = childTbody.dataset.parentId; // 현재 선택 부모 ID
+    new Sortable(childTbody, {
+      handle: '.handle',
+      animation: 150,
+      filter: 'input,button,a,form',
+      onEnd: async () => {
+        // 현재 행 순서대로 자식 id 수집
+        const orderedIds = Array.from(childTbody.querySelectorAll('tr[data-id]'))
+                                .map(tr => Number(tr.dataset.id));
+        try {
+          const res = await fetch(`/admin/categories/${parentId}/children/reorder`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(CSRF_HEADER ? { [CSRF_HEADER]: CSRF_TOKEN } : {})
+            },
+            body: JSON.stringify({ orderedIds })
+          });
+          if (!res.ok) {
+            const txt = await res.text();
+            console.error('Child reorder failed', res.status, txt);
+            throw new Error('child reorder failed');
+          }
+          // 성공 시 화면 순서는 이미 반영됨. 필요하면 토스트/플래시 추가 가능.
+        } catch (e) {
+          alert('자식 순서 저장에 실패했습니다. 새로고침 후 다시 시도해주세요.');
+          location.reload();
+        }
+      }
+    });
+  }
 
         </script>
 
