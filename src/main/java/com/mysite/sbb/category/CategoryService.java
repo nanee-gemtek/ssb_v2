@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -135,4 +136,36 @@ public class CategoryService {
         Category category = Category.builder().name(name).parent(parent).build();
         return categoryRepository.save(category);
     }
+
+    @Transactional
+    public DeleteResult deleteParents(List<Long> parentIds) {
+        List<Long> deleted = new ArrayList<>();
+        Map<Long, String> fail = new LinkedHashMap<>();
+
+        if (parentIds == null) return new DeleteResult(deleted, fail);
+
+        for (Long id : parentIds) {
+            Optional<Category> opt = categoryRepository.findById(id);
+            if (opt.isEmpty()) {
+                fail.put(id, "존재하지 않음");
+                continue;
+            }
+            long childCnt = categoryRepository.countByParentId(id);
+            long productCnt = productRepository.countByCategoryId(id);
+
+            if (childCnt > 0) {
+                fail.put(id, "자식 카테고리가 있어 삭제 불가 (" + childCnt + "개)");
+                continue;
+            }
+            if (productCnt > 0) {
+                fail.put(id, "해당 카테고리에 상품이 있어 삭제 불가 (" + productCnt + "개)");
+                continue;
+            }
+
+            categoryRepository.deleteById(id);
+            deleted.add(id);
+        }
+        return new DeleteResult(deleted, fail);
+    }
+
 }

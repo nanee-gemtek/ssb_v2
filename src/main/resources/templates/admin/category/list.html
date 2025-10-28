@@ -12,14 +12,23 @@
 
     <h2>카테고리 관리</h2>
     <div class="category_wrap">
-        <!-- 우측: 부모 카테고리 리스트 (자식 수 표시 + 삭제 체크박스 UI만, 동작은 아직 X) -->
+        <!-- 우측: 부모 카테고리 리스트 (자식 수 표시 + 선택 삭제 버튼, CSRF 없음) -->
         <section class="panel">
             <div class="toolbar">
                 <strong>부모 카테고리</strong>
                 <span class="muted">자식 수는 직계(children) 기준</span>
             </div>
             <hr>
-            <form id="parentListForm">
+
+            <!-- 플래시 메시지 -->
+            <div th:if="${msgSuccess}"
+                 style="background:#eef9f0;border:1px solid #cfe9d3;padding:8px;border-radius:6px;margin-bottom:8px;"
+                 th:text="${msgSuccess}"></div>
+            <div th:if="${msgError}"
+                 style="white-space:pre-line;background:#fff4f4;border:1px solid #f1cdcd;padding:8px;border-radius:6px;margin-bottom:8px;"
+                 th:text="${msgError}"></div>
+
+            <form action="/admin/categories/delete-parents" method="post" id="parentListForm">
                 <table>
                     <thead>
                     <tr>
@@ -34,24 +43,22 @@
                     </thead>
                     <tbody>
                     <tr th:each="p : ${roots}">
-                        <td>
-                            <!-- 3단계에서 실제 삭제에 쓰일 체크박스 (지금은 UI만) -->
-                            <input type="checkbox" name="parentIds" th:value="${p.id}">
-                        </td>
+                        <td><input type="checkbox" name="parentIds" th:value="${p.id}"></td>
                         <td th:text="${p.id}">1</td>
                         <td>
-                            <!-- 클릭 시 좌측/하단 뷰에서 해당 부모 기준으로 보도록 링크 유지 -->
                             <a th:href="@{|/admin/categories?selected=${p.id}|}" th:text="${p.name}">Parent</a>
                         </td>
-                        <!-- ⭐ 자식 수 표시: #lists.size(p.children) -->
                         <td th:text="${#lists.size(p.children)}">0</td>
-                        <td>
-                            <!-- 다음 단계에서 자식 보기/삭제 등 연결 예정 -->
-                            <a th:href="@{|/admin/categories?selected=${p.id}|}">자식 보기</a>
-                        </td>
+                        <td><a th:href="@{|/admin/categories?selected=${p.id}|}">자식 보기</a></td>
                     </tr>
                     </tbody>
                 </table>
+
+                <div style="margin-top:10px; display:flex; gap:8px;">
+                    <button type="submit" onclick="return confirm('선택한 부모 카테고리를 삭제할까요?')">
+                        선택 삭제
+                    </button>
+                </div>
             </form>
         </section>
 
@@ -60,6 +67,7 @@
               document.querySelectorAll('input[name="parentIds"]').forEach(cb => cb.checked = master.checked);
             }
         </script>
+
 
 
         <!-- 좌측: 선택한 부모의 자식 카테고리 목록 -->

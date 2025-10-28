@@ -22,7 +22,8 @@ public class SecurityConfig {
     SecurityFilterChain filterChanin(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers(
-                        new AntPathRequestMatcher("/user/support/create-ajax")
+                        new AntPathRequestMatcher("/user/support/create-ajax"),
+                        new AntPathRequestMatcher("/admin/categories/delete-parents", "POST") // 최소 범위
                 ))
                 .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())

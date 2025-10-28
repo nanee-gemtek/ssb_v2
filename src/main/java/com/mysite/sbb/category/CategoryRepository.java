@@ -34,5 +34,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "order by p.sortOrder asc, p.name asc, c.sortOrder asc, c.name asc")
     List<Category> findRootsWithChildren();
 
+    long countByParentId(Long parentId); // ⭐ 선택 부모의 직계 자식 수
 
 }

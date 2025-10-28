@@ -51,4 +51,6 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     // 단일 카테고리 상품 수
     long countByCategoryId(long categoryId);
+
+
 }

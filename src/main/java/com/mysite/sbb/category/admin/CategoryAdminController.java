@@ -1,15 +1,19 @@
 package com.mysite.sbb.category.admin;
 
 import com.mysite.sbb.category.CategoryService;
+import com.mysite.sbb.category.DeleteResult;
 import com.mysite.sbb.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -48,4 +52,25 @@ public class CategoryAdminController {
 
         return "admin/category/list";
     }
+
+
+    @PostMapping("/delete-parents")
+    public String deleteParents(
+            @RequestParam(name = "parentIds", required = false) List<Long> parentIds,
+            RedirectAttributes rttr) {
+
+        DeleteResult result = categoryService.deleteParents(parentIds);
+
+        if (!result.getDeletedIds().isEmpty()) { // ✅ getDeletedIds()
+            rttr.addFlashAttribute("msgSuccess", "삭제 완료: " + result.getDeletedIds());
+        }
+        if (!result.getFailures().isEmpty()) {    // ✅ getFailures()
+            StringBuilder sb = new StringBuilder("삭제 실패:\n");
+            result.getFailures().forEach((id, reason) ->
+                    sb.append("#").append(id).append(" - ").append(reason).append("\n"));
+            rttr.addFlashAttribute("msgError", sb.toString());
+        }
+        return "redirect:/admin/categories";
+    }
+
 }
