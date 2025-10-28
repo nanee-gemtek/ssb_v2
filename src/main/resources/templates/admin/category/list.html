@@ -62,39 +62,45 @@
         </script>
 
 
-        <!-- 형제 목록 패널 -->
-        <section class="panel">
+        <!-- 좌측: 선택한 부모의 자식 카테고리 목록 -->
+        <section class="panel tree">
             <div class="toolbar">
-                <strong>형제 목록</strong>
-                <span class="muted">정렬: sortOrder → name</span>
+                <strong th:text="${'자식 카테고리 (부모 #' + selectedId + ')'}">자식 카테고리</strong>
             </div>
             <hr>
+
             <table>
                 <thead>
                 <tr>
+                    <th style="width:48px;">
+                        <!-- 4단계에서 실제 삭제에 사용 예정 (지금은 UI만) -->
+                        <input type="checkbox" onclick="toggleAllChildren(this)">
+                    </th>
                     <th style="width:80px;">ID</th>
-                    <th>이름</th>
-                    <th style="width:120px;">정렬(sort)</th>
-                    <th style="width:150px;">타입</th>
+                    <th>자식 이름</th>
+                    <th style="width:140px;">제품 수</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="c : ${siblings}">
-                    <td th:text="${c.id}">1</td>
-                    <td th:text="${c.name}">Name</td>
-                    <td th:text="${c.sortOrder}">10</td>
-                    <td>
-                        <span class="pill" th:text="${c.parent} == null ? '루트' : '자식'">루트</span>
-                    </td>
+                <tr th:if="${#lists.isEmpty(childrenOfSelected)}">
+                    <td colspan="4" class="muted">자식 카테고리가 없습니다.</td>
+                </tr>
+                <tr th:each="ch : ${childrenOfSelected}">
+                    <td><input type="checkbox" name="childIds" th:value="${ch.id}"></td>
+                    <td th:text="${ch.id}">10</td>
+                    <td th:text="${ch.name}">Child Name</td>
+                    <td th:text="${productCountByCat[ch.id]}">0</td>
                 </tr>
                 </tbody>
             </table>
         </section>
+
+        <script>
+            function toggleAllChildren(master){
+              document.querySelectorAll('input[name="childIds"]').forEach(cb => cb.checked = master.checked);
+            }
+        </script>
     </div>
 </div>
-<script>
-    function expandAll(open) {
-      document.querySelectorAll('.tree details').forEach(d => d.open = open);
-    }
-</script>
+
 </html>

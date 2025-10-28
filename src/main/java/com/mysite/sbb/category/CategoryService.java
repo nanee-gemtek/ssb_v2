@@ -126,6 +126,7 @@ public class CategoryService {
     }
 
     public List<Category> getChildren(Long parentId) {
+        if (parentId == null) return List.of();
         return categoryRepository.findByParentIdOrderBySortOrderAscNameAsc(parentId);
     }
 

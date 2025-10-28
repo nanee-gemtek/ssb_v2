@@ -47,4 +47,8 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             "left join fetch p.category " +
             "where p.id in :ids")
     List<Product> findByIdInWithAll(@Param("ids") List<Integer> ids);
+
+
+    // 단일 카테고리 상품 수
+    long countByCategoryId(long categoryId);
 }
