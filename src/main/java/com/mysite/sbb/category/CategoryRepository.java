@@ -1,11 +1,38 @@
 package com.mysite.sbb.category;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import java.util.Collection;
 import java.util.List;
 
 
 public interface CategoryRepository extends JpaRepository<Category, Long> {
+
+    // 루트 목록만
     List<Category> findByParentIsNullOrderBySortOrderAscNameAsc(); // 상위 카테고리만 조회
+
+    // 특정 부모의 자식들(형제 목록)
     List<Category> findByParentIdOrderBySortOrderAscNameAsc(Long parentId); // 특정 상위의 하위 카테고리 조회
+
+    // 제품이 달린 카테고리 id (직접 연결만)
+    @Query("select distinct c.id from Category c join Product p on p.category = c")
+    List<Long> findCategoryIdsHavingProducts();
+
+    // 필터링된 루트만 (루트 + id in)
+    List<Category> findByParentIsNullAndIdInOrderBySortOrderAscNameAsc(Collection<Long> ids);
+
+    // 특정 부모의 '표시 대상 id들'만
+    List<Category> findByParentIdAndIdInOrderBySortOrderAscNameAsc(Long parentId, Collection<Long> ids);
+
+
+    /* admin */
+    // 루트 + 직계 자식 한 번에 (N+1 방지)
+    @Query("select distinct p from Category p " +
+            "left join fetch p.children c " +
+            "where p.parent is null " +
+            "order by p.sortOrder asc, p.name asc, c.sortOrder asc, c.name asc")
+    List<Category> findRootsWithChildren();
+
+
 }

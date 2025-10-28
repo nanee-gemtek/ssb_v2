@@ -6,11 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -20,13 +18,65 @@ public class CategoryService {
     private final ProductRepository productRepository;
 
 
-    /** 좌측 사이드바: 루트와(상위) 각 루트의 직계 자식 목록 */
+    @Transactional(readOnly = true)
+    public List<Category> getRootTree() {
+        return categoryRepository.findRootsWithChildren(); // 루트 + 직계 자식
+    }
+
+    @Transactional(readOnly = true)
+    public List<Category> getSiblings(Long categoryId) {
+        if (categoryId == null) return categoryRepository.findByParentIsNullOrderBySortOrderAscNameAsc();
+        Category target = categoryRepository.findById(categoryId).orElse(null);
+        if (target == null) return categoryRepository.findByParentIsNullOrderBySortOrderAscNameAsc();
+        Long parentId = (target.getParent() == null) ? null : target.getParent().getId();
+        return (parentId == null)
+                ? categoryRepository.findByParentIsNullOrderBySortOrderAscNameAsc()
+                : categoryRepository.findByParentIdOrderBySortOrderAscNameAsc(parentId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Category> findById(Long id) {
+        return categoryRepository.findById(id);
+    }
+
     public SidebarData getSidebarData() {
-        List<Category> roots = categoryRepository.findByParentIsNullOrderBySortOrderAscNameAsc();
+        // 1) 제품이 직접 달린 카테고리 id
+        List<Long> leafIds = categoryRepository.findCategoryIdsHavingProducts();
+        if (leafIds.isEmpty()) {
+            // 제품이 하나도 없다면 빈 사이드바
+            return new SidebarData(List.of(), Map.of());
+        }
+
+        // 2) 조상까지 모두 포함 (findById 캐싱해서 N+1 최소화)
+        Set<Long> displayIds = new LinkedHashSet<>(leafIds);
+        Map<Long, Category> cache = new HashMap<>();
+
+        for (Long id : leafIds) {
+            Category cur = cache.computeIfAbsent(id, i -> categoryRepository.findById(i).orElse(null));
+            while (cur != null && cur.getParent() != null) {
+                Category parent = cur.getParent();
+                Long pid = parent.getId();
+                if (!displayIds.add(pid)) {
+                    // 이미 올라간 부모면 더 올라갈 필요 없음
+                    break;
+                }
+                // 다음 루프를 위해 부모를 캐시에 채우기
+                cur = cache.computeIfAbsent(pid, i -> categoryRepository.findById(i).orElse(null));
+            }
+        }
+
+        // 3) 루트(부모가 null) 중에서도 표시 대상에 포함된 것만 노출
+        List<Category> roots = categoryRepository
+                .findByParentIsNullAndIdInOrderBySortOrderAscNameAsc(displayIds);
+
+        // 4) 각 루트의 '표시 대상' 자식만 노출
         Map<Long, List<Category>> childrenMap = new LinkedHashMap<>();
         for (Category r : roots) {
-            childrenMap.put(r.getId(), categoryRepository.findByParentIdOrderBySortOrderAscNameAsc(r.getId()));
+            List<Category> children = categoryRepository
+                    .findByParentIdAndIdInOrderBySortOrderAscNameAsc(r.getId(), displayIds);
+            childrenMap.put(r.getId(), children);
         }
+
         return new SidebarData(roots, childrenMap);
     }
 

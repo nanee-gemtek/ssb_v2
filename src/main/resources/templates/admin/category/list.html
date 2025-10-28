@@ -1,0 +1,100 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/layout}">
+<head>
+    <th:block layout:fragment="head-extra">
+        <link rel="stylesheet" th:href="@{/css/admin/category_list.css}">
+    </th:block>
+</head>
+<div layout:fragment="content" class="container my-3">
+
+
+
+    <h2>카테고리 관리</h2>
+    <div class="category_wrap">
+        <!-- 우측: 부모 카테고리 리스트 (자식 수 표시 + 삭제 체크박스 UI만, 동작은 아직 X) -->
+        <section class="panel">
+            <div class="toolbar">
+                <strong>부모 카테고리</strong>
+                <span class="muted">자식 수는 직계(children) 기준</span>
+            </div>
+            <hr>
+            <form id="parentListForm">
+                <table>
+                    <thead>
+                    <tr>
+                        <th style="width:48px;">
+                            <input type="checkbox" onclick="toggleAllParents(this)">
+                        </th>
+                        <th style="width:80px;">ID</th>
+                        <th>부모 이름</th>
+                        <th style="width:140px;">자식 수</th>
+                        <th style="width:160px;">관리</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${roots}">
+                        <td>
+                            <!-- 3단계에서 실제 삭제에 쓰일 체크박스 (지금은 UI만) -->
+                            <input type="checkbox" name="parentIds" th:value="${p.id}">
+                        </td>
+                        <td th:text="${p.id}">1</td>
+                        <td>
+                            <!-- 클릭 시 좌측/하단 뷰에서 해당 부모 기준으로 보도록 링크 유지 -->
+                            <a th:href="@{|/admin/categories?selected=${p.id}|}" th:text="${p.name}">Parent</a>
+                        </td>
+                        <!-- ⭐ 자식 수 표시: #lists.size(p.children) -->
+                        <td th:text="${#lists.size(p.children)}">0</td>
+                        <td>
+                            <!-- 다음 단계에서 자식 보기/삭제 등 연결 예정 -->
+                            <a th:href="@{|/admin/categories?selected=${p.id}|}">자식 보기</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </section>
+
+        <script>
+            function toggleAllParents(master) {
+              document.querySelectorAll('input[name="parentIds"]').forEach(cb => cb.checked = master.checked);
+            }
+        </script>
+
+
+        <!-- 형제 목록 패널 -->
+        <section class="panel">
+            <div class="toolbar">
+                <strong>형제 목록</strong>
+                <span class="muted">정렬: sortOrder → name</span>
+            </div>
+            <hr>
+            <table>
+                <thead>
+                <tr>
+                    <th style="width:80px;">ID</th>
+                    <th>이름</th>
+                    <th style="width:120px;">정렬(sort)</th>
+                    <th style="width:150px;">타입</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${siblings}">
+                    <td th:text="${c.id}">1</td>
+                    <td th:text="${c.name}">Name</td>
+                    <td th:text="${c.sortOrder}">10</td>
+                    <td>
+                        <span class="pill" th:text="${c.parent} == null ? '루트' : '자식'">루트</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+</div>
+<script>
+    function expandAll(open) {
+      document.querySelectorAll('.tree details').forEach(d => d.open = open);
+    }
+</script>
+</html>
