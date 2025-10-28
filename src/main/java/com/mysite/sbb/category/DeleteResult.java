@@ -7,5 +7,6 @@ import java.util.Map;
 @Value
 public class DeleteResult {
     List<Long> deletedIds;
+    Map<Long, String> deletedNames; // ✅ id → name
     Map<Long, String> failures;
 }

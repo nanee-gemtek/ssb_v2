@@ -16,9 +16,16 @@
         <section class="panel">
             <div class="toolbar">
                 <strong>부모 카테고리</strong>
-                <span class="muted">자식 수는 직계(children) 기준</span>
             </div>
             <hr>
+            <!-- 부모 카테고리 추가 폼 -->
+            <form th:action="@{/admin/categories}" method="post" style="margin-bottom:12px; display:flex; gap:8px; align-items:center;">
+                <!-- CSRF -->
+                <input type="text" name="name" placeholder="새 부모 카테고리 이름" required maxlength="100" style="flex:1; padding:6px 8px;">
+                <!-- parentId는 루트 생성이므로 비워둠 -->
+                <input type="hidden" name="parentId" value="">
+                <button type="submit">추가</button>
+            </form>
 
             <!-- 플래시 메시지 -->
             <div th:if="${msgSuccess}"
@@ -28,7 +35,6 @@
                  style="white-space:pre-line;background:#fff4f4;border:1px solid #f1cdcd;padding:8px;border-radius:6px;margin-bottom:8px;"
                  th:text="${msgError}"></div>
 
-            <form action="/admin/categories/delete-parents" method="post" id="parentListForm">
                 <table>
                     <thead>
                     <tr>
@@ -38,34 +44,91 @@
                         <th style="width:80px;">ID</th>
                         <th>부모 이름</th>
                         <th style="width:140px;">자식 수</th>
-                        <th style="width:160px;">관리</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="p : ${roots}">
+                    <tr th:each="p : ${roots}"
+                        th:classappend="${selectedId == p.id} ? ' row-selected' : ''"
+                        role="row"
+                        th:attr="aria-selected=${selectedId == p.id}">
                         <td><input type="checkbox" name="parentIds" th:value="${p.id}"></td>
                         <td th:text="${p.id}">1</td>
                         <td>
-                            <a th:href="@{|/admin/categories?selected=${p.id}|}" th:text="${p.name}">Parent</a>
+                            <!-- 보기 모드 -->
+                            <div class="inline-view" th:attr="data-id=${p.id}">
+                                <a th:href="@{|/admin/categories?selected=${p.id}|}" th:text="${p.name}">Parent</a>
+                                <button type="button" class="btn-edit" style="font-size:12px;">수정</button>
+                            </div>
+
+                            <!-- 편집 모드 (초기 감춤) -->
+                            <form class="inline-edit"
+                                  th:action="@{|/admin/categories/${p.id}|}"
+                                  method="post"
+                                  th:attr="data-id=${p.id}">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <input type="text" name="name" th:value="${p.name}" maxlength="100" required>
+                                <span class="inline-actions">
+                                    <button type="submit">저장</button>
+                                    <button type="button" class="btn-cancel">취소</button>
+                                </span>
+                            </form>
                         </td>
+
                         <td th:text="${#lists.size(p.children)}">0</td>
-                        <td><a th:href="@{|/admin/categories?selected=${p.id}|}">자식 보기</a></td>
                     </tr>
                     </tbody>
                 </table>
 
                 <div style="margin-top:10px; display:flex; gap:8px;">
-                    <button type="submit" onclick="return confirm('선택한 부모 카테고리를 삭제할까요?')">
+                    <button type="submit" form="parentDeleteForm"
+                            onclick="return confirm('선택한 부모 카테고리를 삭제할까요?')">
                         선택 삭제
                     </button>
                 </div>
-            </form>
+            <!-- ✅ 테이블 바깥에 삭제 폼만 둔다 -->
+            <form id="parentDeleteForm" th:action="@{/admin/categories/delete-parents}" method="post"></form>
         </section>
 
         <script>
-            function toggleAllParents(master) {
-              document.querySelectorAll('input[name="parentIds"]').forEach(cb => cb.checked = master.checked);
-            }
+
+              // 보기→편집 토글
+              document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                  const view = e.target.closest('.inline-view');
+                  const id = view.getAttribute('data-id');
+                  const edit = view.parentElement.querySelector('.inline-edit[data-id="'+id+'"]');
+                  view.style.display = 'none';
+                  edit.style.display = 'flex';
+                  const input = edit.querySelector('input[name="name"]');
+                  input.focus();
+                  input.setSelectionRange(input.value.length, input.value.length);
+                });
+              });
+
+              // 취소 → 편집→보기
+              document.querySelectorAll('.inline-edit .btn-cancel').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                  const edit = e.target.closest('.inline-edit');
+                  const id = edit.getAttribute('data-id');
+                  const view = edit.parentElement.querySelector('.inline-view[data-id="'+id+'"]');
+                  edit.style.display = 'none';
+                  view.style.display = 'flex';
+                });
+              });
+
+              // Enter 저장 / Esc 취소 UX
+              document.querySelectorAll('.inline-edit input[name="name"]').forEach(input => {
+                input.addEventListener('keydown', (e) => {
+                  if (e.key === 'Escape') {
+                    e.preventDefault();
+                    const edit = e.target.closest('.inline-edit');
+                    edit.querySelector('.btn-cancel').click();
+                  }
+                  // Enter는 기본 submit이므로 추가 처리 불필요
+                });
+              });
+
+
         </script>
 
 

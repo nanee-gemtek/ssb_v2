@@ -140,9 +140,10 @@ public class CategoryService {
     @Transactional
     public DeleteResult deleteParents(List<Long> parentIds) {
         List<Long> deleted = new ArrayList<>();
+        Map<Long, String> deletedNames = new LinkedHashMap<>(); // ✅ 추가
         Map<Long, String> fail = new LinkedHashMap<>();
 
-        if (parentIds == null) return new DeleteResult(deleted, fail);
+        if (parentIds == null) return new DeleteResult(deleted,deletedNames ,fail);
 
         for (Long id : parentIds) {
             Optional<Category> opt = categoryRepository.findById(id);
@@ -150,6 +151,7 @@ public class CategoryService {
                 fail.put(id, "존재하지 않음");
                 continue;
             }
+            Category c = opt.get();                 // ✅ 이름 확보는 삭제 전에
             long childCnt = categoryRepository.countByParentId(id);
             long productCnt = productRepository.countByCategoryId(id);
 
@@ -164,25 +166,28 @@ public class CategoryService {
 
             categoryRepository.deleteById(id);
             deleted.add(id);
+            deletedNames.put(id, c.getName());      // ✅ 이름 기록
         }
-        return new DeleteResult(deleted, fail);
+        return new DeleteResult(deleted,deletedNames, fail);
     }
 
 
     @Transactional
     public DeleteResult deleteChildren(List<Long> childIds) {
         List<Long> deleted = new ArrayList<>();
+        Map<Long, String> deletedNames = new LinkedHashMap<>(); // ✅ 추가
         Map<Long, String> fail = new LinkedHashMap<>();
 
         if (childIds == null || childIds.isEmpty()) {
             fail.put(-1L, "선택된 자식 카테고리가 없습니다.");
-            return new DeleteResult(deleted, fail);
+            return new DeleteResult(deleted,deletedNames, fail);
         }
 
         for (Long id : childIds) {
             var opt = categoryRepository.findById(id);
             if (opt.isEmpty()) { fail.put(id, "존재하지 않음"); continue; }
 
+            Category c = opt.get();                 // ✅ 이름 확보
             long childCnt   = categoryRepository.countByParentId(id);             // 손자 이상 방지
             long productCnt = productRepository.countByCategoryId(id);
 
@@ -191,8 +196,87 @@ public class CategoryService {
 
             categoryRepository.deleteById(id);
             deleted.add(id);
+            deletedNames.put(id, c.getName());      // ✅ 이름 기록
         }
-        return new DeleteResult(deleted, fail);
+        return new DeleteResult(deleted,deletedNames, fail);
+    }
+
+
+    /** 생성: parentId=null 이면 루트. 맨 뒤(최대+10)에 배치 */
+    @Transactional
+    public Category create(String name, Long parentId) {
+        // 중복 이름(같은 부모 내) 방지(필요 없으면 제거 가능)
+        if (parentId == null) {
+            if (categoryRepository.existsByParentIsNullAndName(name)) {
+                throw new IllegalArgumentException("이미 존재하는 루트 카테고리 이름입니다: " + name);
+            }
+        } else {
+            if (categoryRepository.existsByParentIdAndName(parentId, name)) {
+                throw new IllegalArgumentException("해당 부모 아래 이미 존재하는 이름입니다: " + name);
+            }
+        }
+
+        Category parent = null;
+        if (parentId != null) {
+            parent = categoryRepository.findById(parentId).orElseThrow(() -> new NoSuchElementException("부모가 없음: " + parentId));
+        }
+
+        Integer max = categoryRepository.findMaxSortOrderByParentId(parentId);
+        int next = (max == null ? 10 : max + 10);
+
+        Category c = new Category();
+        c.setName(name);
+        c.setParent(parent);
+        c.setSortOrder(next);
+
+        return categoryRepository.save(c);
+    }
+
+    /** 이름 수정만 (부모 변경은 스코프 외) */
+    @Transactional
+    public void rename(Long id, String newName) {
+        Category c = categoryRepository.findById(id).orElseThrow(() -> new NoSuchElementException("카테고리 없음: " + id));
+
+        Long parentId = (c.getParent() == null ? null : c.getParent().getId());
+        // 같은 부모 내 중복 방지
+        boolean dup = (parentId == null)
+                ? categoryRepository.existsByParentIsNullAndName(newName)
+                : categoryRepository.existsByParentIdAndName(parentId, newName);
+
+        if (dup && !Objects.equals(c.getName(), newName)) {
+            throw new IllegalArgumentException("동일 부모 하에 중복 이름입니다: " + newName);
+        }
+
+        c.setName(newName);
+        // JPA dirty checking으로 업데이트
+    }
+
+    /**
+     * 형제 재정렬: parentId 아래의 형제들을 orderedIds 순서대로 10,20,30… 부여
+     * - 모든 id가 동일 parentId를 가져야 함(안전성 검사)
+     */
+    @Transactional
+    public void reorderSiblings(Long parentId, List<Long> orderedIds) {
+        if (orderedIds == null || orderedIds.isEmpty()) return;
+
+        // 1) 요청 id들이 전부 같은 부모에 속하는지 검증
+        long mismatch = categoryRepository.countIdsWithDifferentParent(parentId, orderedIds);
+        if (mismatch > 0) {
+            throw new IllegalArgumentException("부모가 다른 항목이 포함되어 있습니다.");
+        }
+
+        // 2) 실제 존재 개수 검증(옵션)
+        List<Category> found = categoryRepository.findAllByIds(orderedIds);
+        if (found.size() != orderedIds.size()) {
+            throw new NoSuchElementException("존재하지 않는 카테고리 id가 포함되어 있습니다.");
+        }
+
+        // 3) 간격 10으로 일괄 재부여
+        int order = 10;
+        for (Long id : orderedIds) {
+            categoryRepository.updateSortOrder(id, order);
+            order += 10;
+        }
     }
 
 }

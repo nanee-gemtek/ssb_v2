@@ -2,14 +2,13 @@ package com.mysite.sbb.category.admin;
 
 import com.mysite.sbb.category.CategoryService;
 import com.mysite.sbb.category.DeleteResult;
+import com.mysite.sbb.category.OrderRequest;
 import com.mysite.sbb.product.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.LinkedHashMap;
@@ -62,7 +61,12 @@ public class CategoryAdminController {
         DeleteResult result = categoryService.deleteParents(parentIds);
 
         if (!result.getDeletedIds().isEmpty()) { // ✅ getDeletedIds()
-            rttr.addFlashAttribute("msgSuccess", "삭제 완료: " + result.getDeletedIds());
+            // ✅ id (name) 형태로 메시지 구성
+            String ok = result.getDeletedIds().stream()
+                    .map(id -> "#" + id + " (" + result.getDeletedNames().get(id) + ")")
+                    .reduce((a,b) -> a + ", " + b)
+                    .orElse("");
+            rttr.addFlashAttribute("msgSuccess", "삭제 완료: " + ok);
         }
         if (!result.getFailures().isEmpty()) {    // ✅ getFailures()
             StringBuilder sb = new StringBuilder("삭제 실패:\n");
@@ -81,10 +85,14 @@ public class CategoryAdminController {
 
         DeleteResult result = categoryService.deleteChildren(childIds);
 
-        if (!result.getDeletedIds().isEmpty()) {
-            rttr.addFlashAttribute("msgSuccessChild", "자식 삭제 완료: " + result.getDeletedIds());
+        if (result != null && result.getDeletedIds() != null && !result.getDeletedIds().isEmpty()) {
+            String ok = result.getDeletedIds().stream()
+                    .map(id -> "#" + id + " (" + result.getDeletedNames().get(id) + ")")
+                    .reduce((a,b) -> a + ", " + b)
+                    .orElse("");
+            rttr.addFlashAttribute("msgSuccessChild", "자식 삭제 완료: " + ok);
         }
-        if (!result.getFailures().isEmpty()) {
+        if (result != null && result.getFailures() != null && !result.getFailures().isEmpty()) {
             StringBuilder sb = new StringBuilder("자식 삭제 실패:\n");
             result.getFailures().forEach((id, reason) ->
                     sb.append("#").append(id).append(" - ").append(reason).append("\n"));
@@ -92,6 +100,40 @@ public class CategoryAdminController {
         }
         // 현재 보고 있던 부모를 유지
         return "redirect:/admin/categories?selected=" + selectedParentId;
+    }
+
+    /** 생성 */
+    @PostMapping
+    public String create(@RequestParam String name,
+                         @RequestParam(required = false) Long parentId) {
+        categoryService.create(name, parentId);
+        // 부모 선택 유지(부모 없으면 루트)
+        String suffix = (parentId == null) ? "" : "?selected=" + parentId;
+        return "redirect:/admin/categories" + suffix;
+    }
+
+    /** 이름 수정 */
+    @PostMapping("/{id}")
+    public String rename(@PathVariable Long id,
+                         @RequestParam String name,
+                         RedirectAttributes rttr) {
+        try {
+            categoryService.rename(id, name);
+            rttr.addFlashAttribute("msgSuccess", "이름 변경 완료: #" + id + " → " + name);
+            return "redirect:/admin/categories?selected=" + id; // ✅ 수정한 부모 하이라이트 유지
+        } catch (IllegalArgumentException e) { // 중복명 등 서비스에서 던진 경우
+            rttr.addFlashAttribute("msgError", "이름 변경 실패: " + e.getMessage());
+            return "redirect:/admin/categories?selected=" + id;
+        }
+    }
+
+    /** 형제 재정렬 (AJAX JSON) */
+    @PostMapping("/{parentId}/children/reorder")
+    @ResponseBody
+    public ResponseEntity<?> reorder(@PathVariable(required = false) Long parentId,
+                                     @RequestBody OrderRequest req) {
+        categoryService.reorderSiblings(parentId, req.getOrderedIds());
+        return ResponseEntity.ok().build();
     }
 
 }

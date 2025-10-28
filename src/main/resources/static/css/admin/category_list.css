@@ -11,3 +11,15 @@
     .toolbar { display:flex; gap:8px; align-items:center; justify-content:space-between; }
     .muted { color:#777; font-size: 12px; }
     details > summary { cursor:pointer; margin: 6px 0; }
+    .row-selected {
+      background: #eef6ff;
+    }
+    .row-selected a {
+      font-weight: 600;
+    }
+
+
+    .inline-edit { display: none; gap: 6px; align-items: center; }
+    .inline-view { display: flex; gap: 6px; align-items: center; }
+    .inline-edit input[type="text"] { padding: 4px 6px; width: 260px; }
+    .inline-actions button { margin-left:4px; }
