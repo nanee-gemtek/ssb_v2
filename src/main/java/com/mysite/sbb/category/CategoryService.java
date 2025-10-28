@@ -168,4 +168,31 @@ public class CategoryService {
         return new DeleteResult(deleted, fail);
     }
 
+
+    @Transactional
+    public DeleteResult deleteChildren(List<Long> childIds) {
+        List<Long> deleted = new ArrayList<>();
+        Map<Long, String> fail = new LinkedHashMap<>();
+
+        if (childIds == null || childIds.isEmpty()) {
+            fail.put(-1L, "선택된 자식 카테고리가 없습니다.");
+            return new DeleteResult(deleted, fail);
+        }
+
+        for (Long id : childIds) {
+            var opt = categoryRepository.findById(id);
+            if (opt.isEmpty()) { fail.put(id, "존재하지 않음"); continue; }
+
+            long childCnt   = categoryRepository.countByParentId(id);             // 손자 이상 방지
+            long productCnt = productRepository.countByCategoryId(id);
+
+            if (childCnt > 0)   { fail.put(id, "하위 카테고리가 있어 삭제 불가 ("+childCnt+"개)"); continue; }
+            if (productCnt > 0) { fail.put(id, "해당 카테고리에 상품이 있어 삭제 불가 ("+productCnt+"개)"); continue; }
+
+            categoryRepository.deleteById(id);
+            deleted.add(id);
+        }
+        return new DeleteResult(deleted, fail);
+    }
+
 }

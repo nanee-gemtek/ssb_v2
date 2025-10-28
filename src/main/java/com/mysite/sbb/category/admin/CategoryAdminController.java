@@ -73,4 +73,25 @@ public class CategoryAdminController {
         return "redirect:/admin/categories";
     }
 
+    @PostMapping("/delete-children")
+    public String deleteChildren(
+            @RequestParam(name = "childIds", required = false) List<Long> childIds,
+            @RequestParam(name = "selectedParentId") Long selectedParentId,
+            RedirectAttributes rttr) {
+
+        DeleteResult result = categoryService.deleteChildren(childIds);
+
+        if (!result.getDeletedIds().isEmpty()) {
+            rttr.addFlashAttribute("msgSuccessChild", "자식 삭제 완료: " + result.getDeletedIds());
+        }
+        if (!result.getFailures().isEmpty()) {
+            StringBuilder sb = new StringBuilder("자식 삭제 실패:\n");
+            result.getFailures().forEach((id, reason) ->
+                    sb.append("#").append(id).append(" - ").append(reason).append("\n"));
+            rttr.addFlashAttribute("msgErrorChild", sb.toString());
+        }
+        // 현재 보고 있던 부모를 유지
+        return "redirect:/admin/categories?selected=" + selectedParentId;
+    }
+
 }
