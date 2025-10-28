@@ -3,12 +3,14 @@
       layout:decorate="~{admin/layout/layout}">
 <head>
     <th:block layout:fragment="head-extra">
+        <meta th:name="_csrf" th:content="${_csrf.token}"/>
+        <meta th:name="_csrf_header" th:content="${_csrf.headerName}"/>
+        <!-- SortableJS -->
+        <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
         <link rel="stylesheet" th:href="@{/css/admin/category_list.css}">
     </th:block>
 </head>
 <div layout:fragment="content" class="container my-3">
-
-
 
     <h2>카테고리 관리</h2>
     <div class="category_wrap">
@@ -46,12 +48,16 @@
                         <th style="width:140px;">자식 수</th>
                     </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="parentTbody">
                     <tr th:each="p : ${roots}"
+                        th:attr="data-id=${p.id}"
                         th:classappend="${selectedId == p.id} ? ' row-selected' : ''"
                         role="row"
-                        th:attr="aria-selected=${selectedId == p.id}">
-                        <td><input type="checkbox" name="parentIds" th:value="${p.id}"></td>
+                        th:attrappend=" aria-selected=${selectedId == p.id}">
+                        <td>
+                            <span class="handle" title="드래그로 순서 변경">≡</span>
+                            <input type="checkbox" name="parentIds" th:value="${p.id}" form="parentDeleteForm">
+                        </td>
                         <td th:text="${p.id}">1</td>
                         <td>
                             <!-- 보기 모드 -->
@@ -87,6 +93,7 @@
                 </div>
             <!-- ✅ 테이블 바깥에 삭제 폼만 둔다 -->
             <form id="parentDeleteForm" th:action="@{/admin/categories/delete-parents}" method="post"></form>
+
         </section>
 
         <script>
@@ -128,7 +135,46 @@
                 });
               });
 
+              const CSRF_HEADER = document.querySelector('meta[name="_csrf_header"]')?.content;
+              const CSRF_TOKEN  = document.querySelector('meta[name="_csrf"]')?.content;
 
+             // 부모 테이블 드래그 정렬
+              const parentTbody = document.getElementById('parentTbody');
+              if (parentTbody) {
+                new Sortable(parentTbody, {
+                  handle: '.handle',          // 핸들로만 드래그
+                  animation: 150,
+                  filter: 'input,button,a,form', // 체크박스/버튼/링크는 드래그 무시
+                  onEnd: async () => {
+                    // 현재 행 순서대로 id 수집
+                    const orderedIds = Array.from(parentTbody.querySelectorAll('tr[data-id]'))
+                                            .map(tr => Number(tr.dataset.id));
+
+                    try {
+                      const res = await fetch('/admin/categories/root/reorder', {
+                        method: 'POST',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          ...(CSRF_HEADER ? { [CSRF_HEADER]: CSRF_TOKEN } : {})
+                        },
+                        body: JSON.stringify({ orderedIds })
+                      });
+
+
+                      if (!res.ok) {
+                        const txt = await res.text();
+                        console.error('Reorder failed', res.status, txt);
+                        throw new Error('reorder failed');
+                      }
+                      // 성공 UX (선택): 토스트/플래시 없이도 즉시 반영됨
+                      // location.reload(); // 강재 새로고침 원하면 주석 해제
+                    } catch (e) {
+                      alert('순서 저장에 실패했습니다. 새로고침 후 다시 시도해주세요.');
+                      location.reload();
+                    }
+                  }
+                });
+              }
         </script>
 
 

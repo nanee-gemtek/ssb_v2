@@ -136,4 +136,11 @@ public class CategoryAdminController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/root/reorder")
+    @ResponseBody
+    public ResponseEntity<?> reorderRoot(@RequestBody OrderRequest req) {
+        categoryService.reorderSiblings(null, req.getOrderedIds());
+        return ResponseEntity.ok().build();
+    }
+
 }

@@ -11,6 +11,7 @@
     .toolbar { display:flex; gap:8px; align-items:center; justify-content:space-between; }
     .muted { color:#777; font-size: 12px; }
     details > summary { cursor:pointer; margin: 6px 0; }
+    .handle { cursor: grab; user-select: none; margin-right:6px; font-weight:600; }
     .row-selected {
       background: #eef6ff;
     }

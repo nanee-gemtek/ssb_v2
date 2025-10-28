@@ -23,7 +23,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers(
                         new AntPathRequestMatcher("/user/support/create-ajax"),
-                        new AntPathRequestMatcher("/admin/categories/delete-parents", "POST") // 최소 범위
+                        new AntPathRequestMatcher("/admin/categories/delete-parents", "POST"),
+                        new AntPathRequestMatcher("/admin/categories/root/reorder", "POST")
                 ))
                 .authorizeHttpRequests((authorizeHttpRequests) -> authorizeHttpRequests
                         .requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
