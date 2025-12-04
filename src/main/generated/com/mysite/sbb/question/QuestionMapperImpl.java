@@ -11,7 +11,9 @@ import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor"
+)
 @Component
 public class QuestionMapperImpl implements QuestionMapper {
 

@@ -3,6 +3,9 @@ package com.mysite.sbb.user;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
+@Generated(
+    value = "org.mapstruct.ap.MappingProcessor"
+)
 @Component
 public class UserMapperImpl implements UserMapper {
 
